@@ -28,11 +28,11 @@
 						2022.2.2
 					</view>
 					<view class="recommend-detail-tool-item">
-						<img src="/static/star.png" class="recommend-detail-tool-item__image">
+						<image src="/static/star.png" class="recommend-detail-tool-item__image">
 						<text class="recommend-detail-tool-item__text">1221</text>
 					</view>
 					<view class="recommend-detail-tool-item">
-						<img src="/static/lock.png" alt="" class="recommend-detail-tool-item__image">
+						<image src="/static/lock.png" alt="" class="recommend-detail-tool-item__image">
 						<text class="recommend-detail-tool-item__text">1223</text>
 					</view>
 				</view>
@@ -43,12 +43,12 @@
 						<view>
 							<text style="min-width: 120rpx;display: inline-block;">资源地址：</text>
 							<text class="value-text">https://h57omr.axshare.com</text>
-							<img src="/static/copy.png" alt="" class="icon">
+							<image src="/static/copy.png" alt="" class="icon">
 						</view>
 						<view>
 							<text style="min-width: 120rpx;display: inline-block;">密码：</text>
 							<text class="value-text">123456</text>
-							<img src="/static/copy.png" alt="" class="icon">
+							<image src="/static/copy.png" alt="" class="icon">
 						</view>
 					</view>
 					<view class="recommend-detail__action-right">

@@ -27,12 +27,12 @@
 							</view>
 							<view class="y-card-tool">
 								<view class="y-card-tool-item">
-									<img src="/static/starfill.png" alt="" class="y-card-tool-item__image" v-if="item.isCollect" @click="collectItem">
-									<img src="/static/star.png" alt="" class="y-card-tool-item__image" v-else @click="collectItem">
+									<image src="/static/starfill.png" alt="" class="y-card-tool-item__image" v-if="item.isCollect" @click="collectItem">
+									<image src="/static/star.png" alt="" class="y-card-tool-item__image" v-else @click="collectItem">
 									<text class="y-card-tool-item__text">1221</text>
 								</view>
 								<view class="y-card-tool-item">
-									<img src="/static/lock.png" alt="" class="y-card-tool-item__image">
+									<image src="/static/lock.png" alt="" class="y-card-tool-item__image">
 									<text class="y-card-tool-item__text">1223</text>
 								</view>
 							</view>
