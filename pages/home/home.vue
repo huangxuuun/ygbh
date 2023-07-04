@@ -5,7 +5,7 @@
 				<view :class="{'y-tab-active':true}">首页</view>
 				<view style="margin-left: 142rpx;" @click="tapTab">推荐</view>
 			</view>
-			<uni-icons type="person" size="48rpx" color="#fff" class="person"></uni-icons>
+			<uni-icons type="person" size="48rpx" color="#fff" class="person" @click="tapMy"></uni-icons>
 			<view class="y-tag-container">
 				<view v-for="(tag,index) in tagList" :key="tag.text" class="y-tag" :class="{'y-tag-active':tag.active}" @click="tapTag(index)">
 					{{tag.text}}
@@ -106,10 +106,14 @@
 			};
 		},
 		methods: {
+			tapMy(){
+				uni.navigateTo({
+					url:'/pages/my/my'
+				})
+			},
 			tapTab(){
-				console.log(1231)
-				uni.redirectTo({
-					url:'/'
+				uni.navigateTo({
+					url:'/pages/recommend/recommend'
 				})
 			},
 			collectItem(){},

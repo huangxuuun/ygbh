@@ -5,7 +5,7 @@
 				<view @click="tapTab">首页</view>
 				<view style="margin-left: 142rpx;" :class="{'y-tab-active':true}">推荐</view>
 			</view>
-			<uni-icons type="person" size="48rpx" color="#fff" class="person"></uni-icons>
+			<uni-icons type="person" size="48rpx" color="#fff" class="person" @click="tapMy"></uni-icons>
 		</view>
 		<scroll-view class="recommend-container" :scroll-y="true" @scrolltolower="lower">
 			<swiper class="swiper" circular :indicator-dots="indicatorDots" :autoplay="autoplay" :interval="interval"
@@ -78,11 +78,13 @@
 			};
 		},
 		methods: {
-			tapTab(){
-				console.log(1231)
-				uni.redirectTo({
-					url:'/pages/home/home'
+			tapMy(){
+				uni.navigateTo({
+					url:'/pages/my/my'
 				})
+			},
+			tapTab(){
+				uni.navigateBack()
 			},
 			lower: function(e) {
 				console.log(e)
