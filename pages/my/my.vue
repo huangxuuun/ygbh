@@ -29,67 +29,28 @@
 				<swiper-item class="swiper-item">
 					<view class="y-section">选择会员套餐</view>
 					<view class="pay-card-container">
-						<view class="pay-card">
+						<view class="pay-card" v-for="(card,index) in cards" :key="card.title" :class="{'pay-card-active':card.isActive}" @click="tapCard(index)">
 							<view class="pay-card__header">
-								永久VIP
+								{{card.title}}
 							</view>
 							<view class="pay-card__body">
 								<view>
-									<text class="big-price">¥188</text>
-									<text class="small-price">¥268</text>
+									<text class="big-price">{{card.bigPrice}}</text>
+									<text class="small-price">{{card.smallPrice}}</text>
 								</view>
 								<view class="save-text">
-									节省29.9%
+									{{card.saveText}}
 								</view>
 								<view class="count-text">
-									20次解锁/天
+									{{card.countText}}
 								</view>
-								<view class="describe-text">
-									最优惠
-								</view>
-							</view>
-						</view>
-						<view class="pay-card">
-							<view class="pay-card__header">
-								永久VIP
-							</view>
-							<view class="pay-card__body">
-								<view>
-									<text class="big-price">¥188</text>
-									<text class="small-price">¥268</text>
-								</view>
-								<view class="save-text">
-									节省29.9%
-								</view>
-								<view class="count-text">
-									20次解锁/天
-								</view>
-								<view class="describe-text">
-									最优惠
-								</view>
-							</view>
-						</view>
-						<view class="pay-card">
-							<view class="pay-card__header">
-								永久VIP
-							</view>
-							<view class="pay-card__body">
-								<view>
-									<text class="big-price">¥188</text>
-									<text class="small-price">¥268</text>
-								</view>
-								<view class="save-text">
-									节省29.9%
-								</view>
-								<view class="count-text">
-									20次解锁/天
-								</view>
-								<view class="describe-text">
-									最优惠
+								<view class="describe-text" v-show="card.describeText">
+									{{card.describeText}}
 								</view>
 							</view>
 						</view>
 						
+				
 					</view>
 					<view class="y-section">注意事项</view>
 					<view class="detail-text">
@@ -98,10 +59,22 @@
 						<view>3.不支持补差价购买更高等级会员套餐</view>
 						<view>4.会员套餐一经购买，不支持退款</view>
 					</view>
+					
 				</swiper-item>
 				<swiper-item class="swiper-item">2</swiper-item>
 				<swiper-item class="swiper-item">3</swiper-item>
 			</swiper>
+			
+		</view>
+		<view class="pay-container" v-show="current===0">
+			<view class="pay-item pay-wechat">
+				<image src="/static/wechat.png" mode="" class="pay-item-image"></image>
+				微信充值
+			</view>
+			<view class="pay-item pay-zfb">
+				<image src="/static/zfb.png" mode="" class="pay-item-image"></image>
+				支付宝充值
+			</view>
 		</view>
 	</view>
 </template>
@@ -110,13 +83,50 @@
 	export default {
 		data() {
 			return {
-				swiperCurrent:0,
+				swiperCurrent: 0,
 				current: 0,
-				tabs: ['会员充值', '我的收藏', '我的资源']
+				tabs: ['会员充值', '我的收藏', '我的资源'],
+				cards: [{
+						title: '永久VIP',
+						bigPrice: '¥188',
+						smallPrice: '¥268',
+						saveText: '节省29.9%',
+						countText: '20次解锁/天',
+						describeText: '最优惠',
+						isActive:true
+					},
+					{
+						title: '年卡VIP',
+						bigPrice: '135',
+						smallPrice: '158',
+						saveText: '节省14.6%',
+						countText: '15次解锁/天',
+						describeText: '最多人选',
+						isActive:false
+					},
+					{
+						title: '月卡VIP',
+						bigPrice: '35',
+						smallPrice: '40',
+						saveText: '节省12.5%',
+						countText: '10次解锁/天',
+						describeText: '',
+						isActive:false
+					},
+
+				]
 			};
 		},
 		methods: {
-			tapBack(){
+			tapCard(index){
+				this.cards.forEach((item,i)=>{
+					item.isActive = false
+					if(i===index){
+						item.isActive = true
+					}
+				})
+			},
+			tapBack() {
 				uni.navigateBack()
 			},
 			animationFinished(e) {
@@ -214,24 +224,28 @@
 		&__tab {
 			padding: 0 40rpx;
 		}
-		&__swiper{
+
+		&__swiper {
 			height: calc(100vh - 500rpx);
 		}
 	}
 
-	.swiper-item{
+	.swiper-item {
 		color: #fff;
+		position: relative;
 	}
-	.y-section{
+
+	.y-section {
 		font-size: 24rpx;
 		font-family: PingFangSC-Regular, PingFang SC;
 		font-weight: 400;
-		color: rgba(255,255,255,0.6);
+		color: rgba(255, 255, 255, 0.6);
 		position: relative;
 		text-indent: 20rpx;
-		margin:32rpx 0;
+		margin: 32rpx 0;
 	}
-	.y-section::before{
+
+	.y-section::before {
 		content: '';
 		display: block;
 		width: 6rpx;
@@ -239,31 +253,34 @@
 		background: linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%);
 		border-radius: 4rpx;
 		position: absolute;
-		top:10rpx
+		top: 10rpx
 	}
-	.pay-card-container{
+
+	.pay-card-container {
 		display: flex;
 		align-items: center;
 		justify-content: space-around;
 	}
-	.pay-card{
+
+	.pay-card {
 		width: 220rpx;
 		height: 340rpx;
 		background: #1F1F1F;
 		border-radius: 8rpx;
-		border: 2rpx solid linear-gradient(135deg, rgba(226, 20, 208, 1), rgba(148, 59, 251, 1)) 2 2;
-		&__header{
+
+		&__header {
 			height: 64rpx;
 			line-height: 64rpx;
 			text-align: center;
 			background: #2E2E2E;
-			border-radius: 8rpx 8rpx 0 0 ;
+			border-radius: 8rpx 8rpx 0 0;
 			font-size: 28rpx;
 			font-family: PingFangSC-Regular, PingFang SC;
 			font-weight: 400;
-			color: rgba(255,255,255,0.8);
+			color: rgba(255, 255, 255, 0.8);
 		}
-		&__body{
+
+		&__body {
 			height: 240rpx;
 			padding-top: 25rpx;
 			display: flex;
@@ -272,37 +289,44 @@
 			justify-content: space-around;
 		}
 	}
-	.big-price{
+
+	.big-price {
 		font-size: 36rpx;
 		font-family: PingFangSC-Medium, PingFang SC;
 		font-weight: 500;
-		color: rgba(255,255,255,0.8);
+		color: rgba(255, 255, 255, 0.8);
 
 	}
-	.small-price{
+	.pay-card-active{
+		border: 2rpx solid #EF0EC9;
+	}
+	.small-price {
 		font-size: 20rpx;
 		font-family: PingFangSC-Regular, PingFang SC;
 		font-weight: 400;
-		color: rgba(255,255,255,0.8);
+		color: rgba(255, 255, 255, 0.8);
 		text-decoration: line-through;
 		margin-left: 4rpx;
 	}
-	.save-text{
+
+	.save-text {
 		font-size: 20rpx;
 		font-family: PingFangSC-Regular, PingFang SC;
 		font-weight: 400;
-		color: rgba(255,255,255,0.4);
+		color: rgba(255, 255, 255, 0.4);
 	}
-	.count-text{
+
+	.count-text {
 		font-size: 24rpx;
 		font-family: PingFangSC-Regular, PingFang SC;
 		font-weight: 400;
 		color: #EF0EC9;
 	}
-	.describe-text{
+
+	.describe-text {
 		width: 184rpx;
 		height: 36rpx;
-		background: rgba(255,147,0,0.24);
+		background: rgba(255, 147, 0, 0.24);
 		border-radius: 8rpx;
 		font-size: 24rpx;
 		font-family: PingFangSC-Regular, PingFang SC;
@@ -311,10 +335,41 @@
 		line-height: 36rpx;
 		text-align: center;
 	}
-	.detail-text{
+
+	.detail-text {
 		font-size: 24rpx;
 		font-family: PingFangSC-Regular, PingFang SC;
 		font-weight: 400;
-		color: rgba(255,255,255,0.6);
+		color: rgba(255, 255, 255, 0.6);
+	}
+	.pay-container{
+		height: 128rpx;
+		background: #1F1F1F;
+		color: #fff;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		width: 100vw;
+		bottom: 0;
+	}
+	.pay-item{
+		width: 280rpx;
+		height: 80rpx;
+		border-radius: 40rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.pay-wechat{
+		background: #00A53F;
+	}
+	.pay-zfb{
+		background: #0058FF;
+		margin-left: 40rpx;
+	}
+	.pay-item-image{
+		width: 48rpx;
+		height: 48rpx;
 	}
 </style>
