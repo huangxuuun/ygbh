@@ -22,8 +22,8 @@
 		<view class="my-container">
 			<view class="my-container__tab">
 				<v-tabs v-model="current" :scroll="false" :tabs="tabs" @change="changeTab" activeColor="#EF0EC9"
-					lineColor="linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%)" :lineScale="0.1" lineHeight='6rpx'
-					bgColor="#171616" color="rgba(255,255,255,0.8)"></v-tabs>
+					lineColor="linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%)" :lineScale="0.2" lineHeight='6rpx'
+					bgColor="#171616" color="rgba(255,255,255,0.8)" :lineAnimation="false"></v-tabs>
 			</view>
 			<swiper class="my-container__swiper" :current="swiperCurrent" @animationfinish="animationFinished">
 				<swiper-item class="swiper-item">
