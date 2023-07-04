@@ -1,0 +1,33 @@
+{
+	"pages": [
+		{
+		        "path" : "pages/recommend/recommend",
+		        "style" :                                                                                    
+		        {
+		           "enablePullDownRefresh": true,
+		           "navigationStyle": "custom"
+		        }
+		        
+		    },
+		{
+		"path": "pages/home/home",
+		
+		"style": {
+			"enablePullDownRefresh": true,
+			"navigationStyle": "custom"
+		}
+	}
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		
+		"app-plus": {
+			"background": "#efeff4"
+		},
+		"rpxCalcMaxDeviceWidth": 960,
+		"rpxCalcBaseDeviceWidth": 375,
+		"rpxCalcIncludeWidth": 750
+	}
+}
