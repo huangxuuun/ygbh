@@ -18,6 +18,9 @@
 					</view>
 				</view>
 			</view>
+			<view class="y-header-logout">
+				退出登录
+			</view>
 		</view>
 		<view class="my-container">
 			<view class="my-container__tab">
@@ -166,7 +169,7 @@
 		font-weight: 500;
 		overflow: hidden;
 		padding: 0 30rpx 0 30rpx;
-
+		position: relative;
 		&-back {
 			&__img {
 				width: 48rpx;
@@ -213,6 +216,18 @@
 		.value-text {
 			margin: 0 20rpx;
 			color: #EF0EC9;
+		}
+		&-logout{
+			width: 128rpx;
+			height: 48rpx;
+			border-radius: 30rpx;
+			border: 2rpx solid rgba(255,255,255,0.45);
+			text-align: center;
+			line-height: 48rpx;
+			position: absolute;
+			top: 170rpx;
+			right: 30rpx;
+			color: rgba(255,255,255,0.79);
 		}
 	}
 

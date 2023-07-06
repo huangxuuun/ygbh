@@ -5,7 +5,8 @@
 			"path": "pages/home/home",
 			"style": {
 				"enablePullDownRefresh": true,
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"onReachBottomDistance": 20
 			}
 		},
 		{
@@ -13,6 +14,7 @@
 			"style": {
 				"enablePullDownRefresh": true,
 				"navigationStyle": "custom"
+				
 			}
 
 		},
