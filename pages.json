@@ -26,6 +26,15 @@
 		        "enablePullDownRefresh": false
 		    }
 		}
+        ,{
+            "path" : "pages/detail/detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -36,7 +45,7 @@
 			"background": "#efeff4"
 		},
 		"rpxCalcMaxDeviceWidth": 960,
-		"rpxCalcBaseDeviceWidth": 375,
+		"rpxCalcBaseDeviceWidth": 750,
 		"rpxCalcIncludeWidth": 750
 	}
 }
