@@ -31,15 +31,16 @@
         class="uni-list-item--waterfall"
         v-for="(item, index) in list"
         :key="index"
-        @click="tapDetail"
+        clickable
       >
         <!-- 自定义 header -->
         <template v-slot:header>
           <view
             class="y-card-image"
+            @click="tapDetail(item)"
             :style="{ 'background-image': 'url(' + item.bannerList[0] + ')' }"
           >
-            <view class="y-card-time"> 2022.12.22 </view>
+            <view class="y-card-time"> {{ item.publishAt }} </view>
           </view>
         </template>
         <!-- 自定义 body -->
@@ -55,16 +56,16 @@
                   alt=""
                   class="y-card-tool-item__image"
                   v-if="item.liked"
-                  @click="collectItem(index)"
+                  @click="collectItem(arguments, index)"
                 />
                 <image
                   src="/static/star.png"
                   alt=""
                   class="y-card-tool-item__image"
                   v-else
-                  @click="collectItem(index)"
+                  @click="collectItem(arguments, index)"
                 />
-                <text class="y-card-tool-item__text">1221</text>
+                <text class="y-card-tool-item__text">{{ item.likeNum }}</text>
               </view>
               <view class="y-card-tool-item">
                 <image
@@ -72,29 +73,47 @@
                   alt=""
                   class="y-card-tool-item__image"
                 />
-                <text class="y-card-tool-item__text">1223</text>
+                <text class="y-card-tool-item__text">{{ item.unlockNum }}</text>
               </view>
             </view>
           </view>
-          <!-- <text class="slot-box slot-text">自定义插槽</text> -->
         </template>
-        <!-- 自定义 footer-->
-        <!-- <template v-slot:footer>
-					<image class="slot-image" src="/static/logo.png" mode="widthFix"></image>
-				</template> -->
       </uni-list-item>
     </uni-list>
     <uni-load-more
       :status="loadType"
       style="top: 236rpx; position: relative; background-color: #171616"
     ></uni-load-more>
+    <uni-popup ref="popup" background-color="#252525">
+      <view class="popup-content">
+        <image src="/static/logo.png" class="logo-img"></image>
+        <view class="logo-text">欢迎进入月光宝盒</view>
+        <view class="input-container">
+          <input
+            class="uni-input"
+            type="number"
+            placeholder="请输入手机号"
+            @input="telInput"
+            v-model="phoneNumber"
+            maxlength="11"
+          />
+        </view>
+        <view class="active-btn" v-if="canSendCode"> 发送验证码 </view>
+        <view class="disable-btn" v-else> 发送验证码 </view>
+
+        <view class="tips">未注册手机号验证通过后将自动注册</view>
+      </view>
+      <view class="close-btn" @click="close"></view>
+    </uni-popup>
   </view>
 </template>
 
 <script>
+import { regexTel } from "./../../utils/regex.js";
 export default {
   data() {
     return {
+      phoneNumber: "",
       page: {
         sort: "",
         pageOffset: "",
@@ -109,7 +128,7 @@ export default {
             "https://img2.baidu.com/it/u=1115987748,3793792879&fm=253&fmt=auto&app=138&f=JPEG?w=890&h=500",
           ],
           title: "【8G】虎牙直播雅雅主播10套合集下载",
-          publishAt: "string",
+          publishAt: "2022.12.22",
           unlockNum: 1231,
           likeNum: 1231,
           liked: true,
@@ -141,25 +160,42 @@ export default {
           active: false,
         },
       ],
+      canSendCode: false,
     };
   },
   methods: {
-    tapDetail() {
+    telInput(e) {
+      if (regexTel.test(e.target.value)) {
+        this.canSendCode = true;
+      } else {
+        this.canSendCode = false;
+      }
+    },
+    open() {
+      this.$refs.popup.open("bottom");
+    },
+    close() {
+      this.$refs.popup.close();
+    },
+    tapDetail(listItem) {
+      console.log("tapDetail’");
       uni.navigateTo({
-        url: "/pages/detail/detail",
+        url: `/pages/detail/detail?id=${listItem.id || 1}`,
       });
     },
     tapMy() {
-      uni.navigateTo({
-        url: "/pages/my/my",
-      });
+      this.$refs.popup.open("bottom");
+      // uni.navigateTo({
+      //   url: "/pages/my/my",
+      // });
     },
     tapTab() {
       uni.navigateTo({
         url: "/pages/recommend/recommend",
       });
     },
-    collectItem(index) {
+    collectItem(arg, index) {
+      // arg[0].stopPropagation();
       this.list[index].liked = !this.list[index].liked;
     },
     tapTag(index) {
@@ -176,6 +212,9 @@ export default {
     changeTab(index) {
       console.log("当前选中的项：" + index);
     },
+  },
+  onReady: function () {
+    this.open();
   },
   onLoad: function (options) {
     // setTimeout(function () {
@@ -199,6 +238,81 @@ export default {
 </script>
 
 <style lang="scss">
+.close-btn {
+  width: 64rpx;
+  height: 64rpx;
+  background-image: url("/static/closebtn.png");
+  background-size: cover;
+  position: absolute;
+  top: 32rpx;
+  right: 32rpx;
+}
+.popup-content {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+.disable-btn {
+  background-image: url("/static/disablebtn.png");
+  background-size: cover;
+  height: 96rpx;
+  width: 640rpx;
+  font-size: 32rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  line-height: 96rpx;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.2);
+  margin-bottom: 68rpx;
+}
+.active-btn {
+  background-image: url("/static/activebtn.png");
+  background-size: cover;
+  height: 96rpx;
+  width: 640rpx;
+  font-size: 32rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  line-height: 96rpx;
+  text-align: center;
+  color: rgb(255, 255, 255);
+  margin-bottom: 68rpx;
+}
+.logo-img {
+  width: 352rpx;
+  height: 352rpx;
+}
+.logo-text {
+  font-size: 40rpx;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #ffffff;
+  position: relative;
+  top: -40rpx;
+}
+.input-container {
+  width: 640rpx;
+  height: 96rpx;
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: 48rpx;
+  margin-bottom: 32rpx;
+}
+.uni-input {
+  height: 96rpx;
+  font-size: 30rpx;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  width: 500rpx;
+  margin-left: 112rpx;
+}
+.tips {
+  font-size: 30rpx;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 90rpx;
+}
 .home {
   min-height: 100vh;
   background-color: #171616;
@@ -292,12 +406,14 @@ export default {
 
       display: flex;
     }
+
     &-title {
       font-size: 24rpx;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 0.79);
     }
+
     &-time {
       font-size: 24rpx;
       font-family: PingFangSC-Medium, PingFang SC;
@@ -307,6 +423,7 @@ export default {
       left: 24rpx;
       top: 180rpx;
     }
+
     &-content {
       height: 172rpx;
       background: #1f1f1f;
@@ -348,6 +465,7 @@ export default {
     border-radius: 8rpx 8rpx 0 0;
     height: 236rpx;
   }
+
   .uni-list--waterfall {
     /* #ifndef H5 || APP-VUE */
     // 小程序 编译后会多一层标签，而其他平台没有，所以需要特殊处理一下
@@ -365,8 +483,8 @@ export default {
       // h5 和 app-vue 使用深度选择器，因为默认使用了 scoped ，所以样式会无法穿透
       ::v-deep
 
-	/* #endif */
-	.uni-list-item--waterfall {
+				/* #endif */
+				.uni-list-item--waterfall {
         width: 50%;
         box-sizing: border-box;
 

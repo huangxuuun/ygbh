@@ -30,7 +30,7 @@
             "path" : "pages/detail/detail",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "",
+                "navigationStyle": "custom",
                 "enablePullDownRefresh": false
             }
             
@@ -47,5 +47,8 @@
 		"rpxCalcMaxDeviceWidth": 960,
 		"rpxCalcBaseDeviceWidth": 750,
 		"rpxCalcIncludeWidth": 750
+	},
+	"app-plus": {
+		"softinputMode": "adjustResize"
 	}
 }
