@@ -3,7 +3,7 @@ const Tips = (title) => {
         title
     })
 }
-const baseURL = process.env.NODE_ENV === 'development' ? "/dev-api" : "https://www.xxx.cn";
+const baseURL = process.env.NODE_ENV === 'development' ? "http://43.139.80.74:8888/api/v1" : "https://www.xxx.cn";
 
 export default async function request(params) {
     return new Promise((reslove, reject) => {

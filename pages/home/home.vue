@@ -98,7 +98,7 @@
             maxlength="11"
           />
         </view>
-        <view class="active-btn" v-if="canSendCode"> 发送验证码 </view>
+        <view class="active-btn" v-if="canSendCode" @click="send"> 发送验证码 </view>
         <view class="disable-btn" v-else> 发送验证码 </view>
 
         <view class="tips">未注册手机号验证通过后将自动注册</view>
@@ -110,6 +110,8 @@
 
 <script>
 import { regexTel } from "./../../utils/regex.js";
+import { sendCode } from "./../../api/user.js";
+
 export default {
   data() {
     return {
@@ -164,6 +166,10 @@ export default {
     };
   },
   methods: {
+    async send(){
+      let res = await sendCode({code:123})
+      console.log(res)
+    },
     telInput(e) {
       if (regexTel.test(e.target.value)) {
         this.canSendCode = true;
