@@ -88,6 +88,22 @@
       <view class="popup-content">
         <image src="/static/logo.png" class="logo-img"></image>
         <view class="logo-text">欢迎进入月光宝盒</view>
+        <view class="send-phone"
+          >验证码已发送至<span style="margin-left: 20rpx">{{
+            phoneNumber
+          }}</span></view
+        >
+        <view class="invitation-text"
+          >*有邀请码才能使用此软件，解锁任意资源</view
+        >
+        <view class="input-container">
+          <input
+            class="uni-input"
+            type="number"
+            placeholder="邀请码"
+            v-model="invitationCode"
+          />
+        </view>
         <view class="input-container">
           <input
             class="uni-input"
@@ -98,8 +114,22 @@
             maxlength="11"
           />
         </view>
-        <view class="active-btn" v-if="canSendCode" @click="send"> 发送验证码 </view>
+        <view class="input-container code-input">
+          <input
+            class="uni-input"
+            type="number"
+            placeholder="请输入验证码"
+            v-model="code"
+            style="width: 250rpx"
+          />
+          <span class="resend-text" @click="resend">重新发送({{ sendCodeTime }}s)</span>
+        </view>
+
+        <view class="active-btn" v-if="canSendCode" @click="send">
+          发送验证码
+        </view>
         <view class="disable-btn" v-else> 发送验证码 </view>
+        <view class="active-btn" @click="bindInvitation"> 进入月光宝盒 </view>
 
         <view class="tips">未注册手机号验证通过后将自动注册</view>
       </view>
@@ -110,12 +140,17 @@
 
 <script>
 import { regexTel } from "./../../utils/regex.js";
-import { sendCode } from "./../../api/user.js";
-
+import { sendCode, bindUserCode } from "./../../api/user.js";
 export default {
   data() {
     return {
-      phoneNumber: "",
+      time: null,
+      phoneNumber: "15267863184",
+      code: "",
+      invitationCode: "",
+      canSendCode: false,
+      sendCodeTime: 60,
+      showPhoneNumber: false,
       page: {
         sort: "",
         pageOffset: "",
@@ -136,13 +171,6 @@ export default {
           liked: true,
           unlocked: true,
         },
-        // {
-        //   img: "https://img2.baidu.com/it/u=1115987748,3793792879&fm=253&fmt=auto&app=138&f=JPEG?w=890&h=500",
-        //   name: "【8G】虎牙直播雅雅主播10套合集下载",
-        //   collectNumber: 1231,
-        //   lockNumber: 1231,
-        //   id: 1,
-        // }
       ],
       tagList: [
         {
@@ -162,13 +190,32 @@ export default {
           active: false,
         },
       ],
-      canSendCode: false,
     };
   },
   methods: {
-    async send(){
-      let res = await sendCode({code:123})
-      console.log(res)
+    resend(){
+      if (this.sendCodeTime > 0) {
+        return
+      }
+      this.send()
+    },
+    async send() {
+      let { phoneNumber } = this;
+      let res = await sendCode({ mobile: phoneNumber });
+      // if (res.code === 0) {
+      //   this.showPhoneNumber = true;
+      // }
+      this.sendCodeTime = 10;
+      this.timer = setInterval(() => {
+        if (this.sendCodeTime > 0) {
+          this.sendCodeTime = this.sendCodeTime - 1;
+        }
+      }, 1000);
+    },
+    async bindInvitation() {
+      let { invitationCode } = this;
+      let res = await bindUserCode({ code: invitationCode });
+      console.log(res);
     },
     telInput(e) {
       if (regexTel.test(e.target.value)) {
@@ -244,6 +291,31 @@ export default {
 </script>
 
 <style lang="scss">
+.invitation-text {
+  font-size: 30rpx;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: #ef0ec9;
+  margin-bottom: 24rpx;
+}
+.code-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.resend-text {
+  font-size: 30rpx;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: #ef0ec9;
+}
+.send-phone {
+  font-size: 30rpx;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 24rpx;
+}
 .close-btn {
   width: 64rpx;
   height: 64rpx;
