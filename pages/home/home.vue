@@ -223,7 +223,6 @@ export default {
         console.log(error);
       }
 
-      console.log(res);
     },
     resend() {
       if (this.sendCodeTime > 0) {
@@ -270,9 +269,9 @@ export default {
     },
     tapMy() {
       this.$refs.popup.open("bottom");
-      // uni.navigateTo({
-      //   url: "/pages/my/my",
-      // });
+      uni.navigateTo({
+        url: "/pages/my/my",
+      });
     },
     tapTab() {
       uni.navigateTo({

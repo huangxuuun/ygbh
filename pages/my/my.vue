@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view class="my">
 		<view class="y-header">
 			<view class="y-header-back" @click="tapBack">
 				<image src="/static/back.png" class="y-header-back__img"></image>
@@ -72,11 +72,15 @@
 		<view class="pay-container" v-show="current===0">
 			<view class="pay-item pay-wechat">
 				<image src="/static/wechat.png" mode="" class="pay-item-image"></image>
-				微信充值
+				<view>
+					微信充值
+				</view>
 			</view>
 			<view class="pay-item pay-zfb">
 				<image src="/static/zfb.png" mode="" class="pay-item-image"></image>
-				支付宝充值
+				<view>
+					支付宝充值
+				</view>
 			</view>
 		</view>
 	</view>
@@ -159,6 +163,11 @@
 </script>
 
 <style lang="scss">
+	.my{
+		::v-deep .v-tabs__container-item{
+			font-family: PingFangSC-Regular, PingFang SC;;
+		}
+	}
 	.y-header {
 		height: 360rpx;
 		background-image: url('/static/headerBg3.png');
@@ -375,6 +384,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		font-family: PingFangSC-Regular, PingFang SC;
 	}
 	.pay-wechat{
 		background: #00A53F;
