@@ -29,7 +29,7 @@ export function resourceDetail({ id }) {
     url: "/resource/detail",
     method: "POST",
     data: {
-      id,
+      id: Number(id),
     },
     loading: true, //是否开启loading动画
   });

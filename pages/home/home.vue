@@ -56,14 +56,14 @@
                   alt=""
                   class="y-card-tool-item__image"
                   v-if="item.liked"
-                  @click="collectItem(arguments, index)"
+                  @click="collectItem(2, item)"
                 />
                 <image
                   src="/static/star.png"
                   alt=""
                   class="y-card-tool-item__image"
                   v-else
-                  @click="collectItem(arguments, index)"
+                  @click="collectItem(1, item)"
                 />
                 <text class="y-card-tool-item__text">{{ item.likeNum }}</text>
               </view>
@@ -122,13 +122,17 @@
             v-model="code"
             style="width: 250rpx"
           />
-          <span class="resend-text" @click="resend">重新发送({{ sendCodeTime }}s)</span>
+          <span class="resend-text" @click="resend"
+            >重新发送({{ sendCodeTime }}s)</span
+          >
         </view>
 
         <view class="active-btn" v-if="canSendCode" @click="send">
           发送验证码
         </view>
         <view class="disable-btn" v-else> 发送验证码 </view>
+        <view class="active-btn" @click="login"> 登录/注册 </view>
+
         <view class="active-btn" @click="bindInvitation"> 进入月光宝盒 </view>
 
         <view class="tips">未注册手机号验证通过后将自动注册</view>
@@ -140,12 +144,13 @@
 
 <script>
 import { regexTel } from "./../../utils/regex.js";
-import { sendCode, bindUserCode } from "./../../api/user.js";
+import { sendCode, bindUserCode, login } from "./../../api/user.js";
+import { likeItem, getList } from "./../../api/resource.js";
 export default {
   data() {
     return {
       time: null,
-      phoneNumber: "15267863184",
+      phoneNumber: "1526786318",
       code: "",
       invitationCode: "",
       canSendCode: false,
@@ -159,18 +164,18 @@ export default {
       },
       loadType: "more", // loading noMore
       list: [
-        {
-          id: 0,
-          bannerList: [
-            "https://img2.baidu.com/it/u=1115987748,3793792879&fm=253&fmt=auto&app=138&f=JPEG?w=890&h=500",
-          ],
-          title: "【8G】虎牙直播雅雅主播10套合集下载",
-          publishAt: "2022.12.22",
-          unlockNum: 1231,
-          likeNum: 1231,
-          liked: true,
-          unlocked: true,
-        },
+        // {
+        //   id: 0,
+        //   bannerList: [
+        //     "https://img2.baidu.com/it/u=1115987748,3793792879&fm=253&fmt=auto&app=138&f=JPEG?w=890&h=500",
+        //   ],
+        //   title: "【8G】虎牙直播雅雅主播10套合集下载",
+        //   publishAt: "2022.12.22",
+        //   unlockNum: 1231,
+        //   likeNum: 1231,
+        //   liked: true,
+        //   unlocked: true,
+        // },
       ],
       tagList: [
         {
@@ -193,11 +198,38 @@ export default {
     };
   },
   methods: {
-    resend(){
-      if (this.sendCodeTime > 0) {
-        return
+    // 获取资源列表
+    async getList() {
+      const { sort, pageOffset, pageSize, sessionId } = this.page;
+      let res = await getList({ sort, pageOffset, pageSize, sessionId });
+      let { list, nextOffset } = res.data;
+      this.list = list;
+      this.page.pageOffset = nextOffset;
+      if (!this.page.pageOffset) {
+        this.loadType = "noMore"; // 显示不再加载
+      } else {
+        this.loadType = "more"; // 显示还可加载
       }
-      this.send()
+      console.log(res);
+    },
+    async login() {
+      const { phoneNumber: mobile, code } = this;
+      try {
+        const res = await login({ mobile, code });
+        if (res.data.token) {
+          uni.setStorageSync("TOKEN", res.data.token);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      console.log(res);
+    },
+    resend() {
+      if (this.sendCodeTime > 0) {
+        return;
+      }
+      this.send();
     },
     async send() {
       let { phoneNumber } = this;
@@ -233,7 +265,7 @@ export default {
     tapDetail(listItem) {
       console.log("tapDetail’");
       uni.navigateTo({
-        url: `/pages/detail/detail?id=${listItem.id || 1}`,
+        url: `/pages/detail/detail?id=${listItem.id}`,
       });
     },
     tapMy() {
@@ -247,9 +279,11 @@ export default {
         url: "/pages/recommend/recommend",
       });
     },
-    collectItem(arg, index) {
+    async collectItem(action, item) {
       // arg[0].stopPropagation();
-      this.list[index].liked = !this.list[index].liked;
+      let res = await likeItem({id:item.id,action});
+      console.log(res)
+      item.liked = !item.liked;
     },
     tapTag(index) {
       this.tagList.forEach((item, i) => {
@@ -267,7 +301,8 @@ export default {
     },
   },
   onReady: function () {
-    this.open();
+    // this.open();
+    this.getList();
   },
   onLoad: function (options) {
     // setTimeout(function () {
@@ -497,7 +532,7 @@ export default {
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 0.79);
-      position: relative;
+      position: absolute;
       left: 24rpx;
       top: 180rpx;
     }

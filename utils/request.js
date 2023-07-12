@@ -15,8 +15,9 @@ export default async function request(params) {
             method: params.method,
             header: {
                 'Content-Type': 'application/json',
-                // 'Token': uni.getStorageSync('TOKEN'),
-                'Authorization': 'Bearer 2f68dbbf-519d-4f01-9636-e2421b68f379'
+                // 'Authorization': 'Bearer ' + uni.getStorageSync('TOKEN')
+				'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTAwNDExMDgsImlhdCI6MTY4OTE3NzEwOCwidWlkIjoxMX0.mld_132-5vjIaHZI0wu9_TGzbPuZ3KheKyKVfVXOzaw"
+				
             },
             data: params.data,
             complete: () => {

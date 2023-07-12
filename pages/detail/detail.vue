@@ -10,28 +10,22 @@
       indicator-active-color="linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%)"
       :duration="duration"
     >
-      <swiper-item>
-        <view class="swiper-item uni-bg-red">A</view>
-      </swiper-item>
-      <swiper-item>
-        <view class="swiper-item uni-bg-green">B</view>
-      </swiper-item>
-      <swiper-item>
-        <view class="swiper-item uni-bg-blue">C</view>
+      <swiper-item v-for="banner in item.bannerList" :key="banner">
+        <view class="swiper-item" :style="{ 'background-image': 'url(' + banner+ ')' }"></view>
       </swiper-item>
     </swiper>
     <view class="recommend-detail">
       <view class="recommend-detail__title"
-        >【8G】虎牙直播雅雅主播10套合集下载</view
+        >{{item.title}}</view
       >
       <view class="recommend-detail-tool">
-        <view class="time"> 2022.2.2 </view>
+        <view class="time"> {{ item.publishAt }} </view>
         <view class="recommend-detail-tool-item">
           <image
             src="/static/star.png"
             class="recommend-detail-tool-item__image"
           />
-          <text class="recommend-detail-tool-item__text">1221</text>
+          <text class="recommend-detail-tool-item__text">{{ item.likeNum }}</text>
         </view>
         <view class="recommend-detail-tool-item">
           <image
@@ -39,7 +33,7 @@
             alt=""
             class="recommend-detail-tool-item__image"
           />
-          <text class="recommend-detail-tool-item__text">1223</text>
+          <text class="recommend-detail-tool-item__text">{{ item.unlocked }}</text>
         </view>
       </view>
       <view class="recommend-detail__line"> </view>
@@ -64,11 +58,12 @@
       </view>
       <view class="recommend-detail__tips"> 解锁后可查看和保存全部资源！ </view>
     </view>
-	<view class="y-section">注意事项</view>
+    <view class="y-section">注意事项</view>
   </view>
 </template>
 
 <script>
+import { resourceDetail } from "./../../api/resource.js";
 export default {
   data() {
     return {
@@ -77,14 +72,33 @@ export default {
       autoplay: true,
       interval: 2000,
       duration: 500,
+      item: {
+        bannerList: [],
+        id: null,
+        info: "",
+        likeNum: 1,
+        liked: false,
+        menu: "菜单1",
+        previewImageList: [],
+        publishAt: "",
+        title: "",
+        unlockNum: "",
+        unlocked: false,
+      },
     };
+  },
+  onLoad: async function (option) {
+    if (option.id) {
+      let res = await resourceDetail({ id: option.id });
+      this.item = res.item
+    }
   },
 };
 </script>
 
 <style lang="scss">
-.pages-detail-detail{
-	background-color: #171616;
+.pages-detail-detail {
+  background-color: #171616;
 }
 .detail {
   background-color: #171616;
@@ -190,24 +204,24 @@ export default {
     text-align: center;
   }
   .y-section {
-		font-size: 24rpx;
-		font-family: PingFangSC-Regular, PingFang SC;
-		font-weight: 400;
-		color: rgba(255, 255, 255, 0.6);
-		position: relative;
-		text-indent: 20rpx;
-		margin: 32rpx 0;
-	}
+    font-size: 24rpx;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+    position: relative;
+    text-indent: 20rpx;
+    margin: 32rpx 0;
+  }
 
-	.y-section::before {
-		content: '';
-		display: block;
-		width: 6rpx;
-		height: 24rpx;
-		background: linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%);
-		border-radius: 4rpx;
-		position: absolute;
-		top: 10rpx
-	}
+  .y-section::before {
+    content: "";
+    display: block;
+    width: 6rpx;
+    height: 24rpx;
+    background: linear-gradient(315deg, #8b3fff 0%, #ef0ec9 100%);
+    border-radius: 4rpx;
+    position: absolute;
+    top: 10rpx;
+  }
 }
 </style>
