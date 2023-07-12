@@ -33,7 +33,7 @@
             alt=""
             class="recommend-detail-tool-item__image"
           />
-          <text class="recommend-detail-tool-item__text">{{ item.unlocked }}</text>
+          <text class="recommend-detail-tool-item__text">{{ item.unlockNum }}</text>
         </view>
       </view>
       <view class="recommend-detail__line"> </view>
@@ -58,7 +58,10 @@
       </view>
       <view class="recommend-detail__tips"> 解锁后可查看和保存全部资源！ </view>
     </view>
-    <view class="y-section">注意事项</view>
+    <view class="y-section">写真集介绍</view>
+    <view class="y-section">写真集介绍</view>
+    <view class="y-section">写真集介绍</view>
+    <view class="y-section">写真集介绍</view>
   </view>
 </template>
 
@@ -90,7 +93,7 @@ export default {
   onLoad: async function (option) {
     if (option.id) {
       let res = await resourceDetail({ id: option.id });
-      this.item = res.item
+      this.item = res.data
     }
   },
 };
