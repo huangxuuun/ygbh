@@ -151,8 +151,8 @@ export default {
     return {
       time: null,
       phoneNumber: "1526786318",
-      code: "",
-      invitationCode: "",
+      code: "", // 验证码
+      invitationCode: "", // 邀请码
       canSendCode: false,
       sendCodeTime: 60,
       showPhoneNumber: false,
@@ -198,12 +198,14 @@ export default {
     };
   },
   methods: {
-    // 获取资源列表
+    /**获取资源列表 */
     async getList() {
       const { sort, pageOffset, pageSize, sessionId } = this.page;
       let res = await getList({ sort, pageOffset, pageSize, sessionId });
       let { list, nextOffset } = res.data;
-      this.list = list;
+      list.forEach((item) => {
+        this.list.push(item);
+      });
       this.page.pageOffset = nextOffset;
       if (!this.page.pageOffset) {
         this.loadType = "noMore"; // 显示不再加载
@@ -212,6 +214,7 @@ export default {
       }
       console.log(res);
     },
+    /** 登录接口，存token */
     async login() {
       const { phoneNumber: mobile, code } = this;
       try {
@@ -222,32 +225,41 @@ export default {
       } catch (error) {
         console.log(error);
       }
-
     },
+    /** 倒计时时间到了 重新执行发送验证码 */
     resend() {
       if (this.sendCodeTime > 0) {
         return;
       }
       this.send();
     },
+    /** 发送验证码 */
     async send() {
       let { phoneNumber } = this;
       let res = await sendCode({ mobile: phoneNumber });
-      // if (res.code === 0) {
-      //   this.showPhoneNumber = true;
-      // }
-      this.sendCodeTime = 10;
+      this.sendCodeTime = 5; // 之后改60
       this.timer = setInterval(() => {
         if (this.sendCodeTime > 0) {
           this.sendCodeTime = this.sendCodeTime - 1;
         }
       }, 1000);
     },
+    /** 首次登录之后执行绑定邀请码 */
     async bindInvitation() {
-      let { invitationCode } = this;
-      let res = await bindUserCode({ code: invitationCode });
-      console.log(res);
+      try {
+        let { invitationCode } = this;
+        let res = await bindUserCode({ code: invitationCode });
+        if (res.code === 0) {
+          uni.showToast({
+            title: "绑定成功",
+            icon: "success",
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
+    /** 判断手机号是否能发送验证码 */
     telInput(e) {
       if (regexTel.test(e.target.value)) {
         this.canSendCode = true;
@@ -262,13 +274,13 @@ export default {
       this.$refs.popup.close();
     },
     tapDetail(listItem) {
-      console.log("tapDetail’");
+      console.log("tapDetail");
       uni.navigateTo({
         url: `/pages/detail/detail?id=${listItem.id}`,
       });
     },
     tapMy() {
-      this.$refs.popup.open("bottom");
+      // this.$refs.popup.open("bottom");
       uni.navigateTo({
         url: "/pages/my/my",
       });
@@ -279,10 +291,19 @@ export default {
       });
     },
     async collectItem(action, item) {
-      // arg[0].stopPropagation();
-      let res = await likeItem({id:item.id,action});
-      console.log(res)
-      item.liked = !item.liked;
+      try {
+        let res = await likeItem({ id: item.id, action });
+        if (res.code === 0) {
+          item.liked = !item.liked;
+          if(action===1){
+            item.likeNum++
+          }else{
+            item.likeNum--
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
     tapTag(index) {
       this.tagList.forEach((item, i) => {
@@ -300,7 +321,6 @@ export default {
     },
   },
   onReady: function () {
-    // this.open();
     this.getList();
   },
   onLoad: function (options) {

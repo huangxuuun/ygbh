@@ -11,13 +11,14 @@
       :duration="duration"
     >
       <swiper-item v-for="banner in item.bannerList" :key="banner">
-        <view class="swiper-item" :style="{ 'background-image': 'url(' + banner+ ')' }"></view>
+        <view
+          class="swiper-item"
+          :style="{ 'background-image': 'url(' + banner + ')' }"
+        ></view>
       </swiper-item>
     </swiper>
     <view class="recommend-detail">
-      <view class="recommend-detail__title"
-        >{{item.title}}</view
-      >
+      <view class="recommend-detail__title">{{ item.title }}</view>
       <view class="recommend-detail-tool">
         <view class="time"> {{ item.publishAt }} </view>
         <view class="recommend-detail-tool-item">
@@ -25,7 +26,9 @@
             src="/static/star.png"
             class="recommend-detail-tool-item__image"
           />
-          <text class="recommend-detail-tool-item__text">{{ item.likeNum }}</text>
+          <text class="recommend-detail-tool-item__text">{{
+            item.likeNum
+          }}</text>
         </view>
         <view class="recommend-detail-tool-item">
           <image
@@ -33,7 +36,9 @@
             alt=""
             class="recommend-detail-tool-item__image"
           />
-          <text class="recommend-detail-tool-item__text">{{ item.unlockNum }}</text>
+          <text class="recommend-detail-tool-item__text">{{
+            item.unlockNum
+          }}</text>
         </view>
       </view>
       <view class="recommend-detail__line"> </view>
@@ -58,10 +63,20 @@
       </view>
       <view class="recommend-detail__tips"> 解锁后可查看和保存全部资源！ </view>
     </view>
-    <view class="y-section">写真集介绍</view>
-    <view class="y-section">写真集介绍</view>
-    <view class="y-section">写真集介绍</view>
-    <view class="y-section">写真集介绍</view>
+    <view class="info-content">
+      <view class="y-section">写真集介绍</view>
+      <view >
+        {{ item.info }}
+      </view>
+      <view class="y-section">写真集介绍</view>
+      <view>
+        {{ item.menu }}
+      </view>
+      <view class="y-section">写真集介绍</view>
+    </view>
+    <view>
+      <image v-for="img in item.previewImageList" :key="img" :src="img" style="width:100vw"></image>
+    </view>
   </view>
 </template>
 
@@ -93,7 +108,7 @@ export default {
   onLoad: async function (option) {
     if (option.id) {
       let res = await resourceDetail({ id: option.id });
-      this.item = res.data
+      this.item = res.data;
     }
   },
 };
@@ -225,6 +240,13 @@ export default {
     border-radius: 4rpx;
     position: absolute;
     top: 10rpx;
+  }
+  .info-content {
+    font-size: 24rpx;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0 32rpx;
   }
 }
 </style>

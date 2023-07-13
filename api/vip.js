@@ -12,7 +12,6 @@ export function wechatCallBack() {
 
 
 
-
 //微信购买会员
 export function wechatBuy({id,payType}) {
     return request({
@@ -42,9 +41,7 @@ export function getVipList() {
 
 
 //用户会员状态
-
-
-export function wechatCallBack() {
+export function vipStatus() {
     return request({
         url: '/vip/status',
         method: 'POST',
