@@ -16,7 +16,8 @@ app.$mount()
 // #ifdef VUE3
 import { createSSRApp } from 'vue'
 import App from './App.vue'
-
+// import orangeUtil from './js_sdk/orange-util/orange-util.js
+// Vue.use(orangeUtil);
 export function createApp() {
   const app = createSSRApp(App)
   return {

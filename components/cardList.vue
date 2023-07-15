@@ -56,6 +56,11 @@
         </template>
       </uni-list-item>
     </uni-list>
+    <image
+      src="/static/empty.png"
+      style="width: 320rpx; height: 320rpx; margin: 0 auto"
+      v-if="list.length === 0"
+    ></image>
     <uni-load-more
       :status="loadType"
       style="top: 236rpx; position: relative; background-color: #171616"
@@ -66,18 +71,12 @@
 <script>
 export default {
   props: {
-    list: []
+    list: [],
+    loadType: "more",
   },
+  name: "CardList",
   data() {
-    return {
-      page: {
-        sort: "",
-        pageOffset: "",
-        pageSize: 10,
-        sessionId: "",
-      },
-      loadType: "more", // loading noMore
-    };
+    return {};
   },
   methods: {
     tapDetail(listItem) {

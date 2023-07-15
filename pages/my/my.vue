@@ -20,7 +20,7 @@
           </view>
         </view>
       </view>
-      <view class="y-header-logout"> 退出登录 </view>
+      <view class="y-header-logout" @click="logout"> 退出登录 </view>
     </view>
     <view class="my-container">
       <view class="my-container__tab">
@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import { vipStatus, getVipList} from "./../../api/vip.js";
+import { vipStatus, getVipList } from "./../../api/vip.js";
 export default {
   data() {
     return {
@@ -137,6 +137,9 @@ export default {
           isActive: false,
         },
       ],
+      vipList:[
+
+      ],
       vip: {
         enable: false,
         periodFlag: "",
@@ -148,21 +151,38 @@ export default {
   },
   onLoad() {
     this.getVipStatus();
-	this.getVipList()
+    this.getVipList();
   },
   methods: {
-	/** 获取VIP状态 */
+    /** 退出登录 */
+    logout() {
+      uni.showModal({
+        title: "提示",
+        content: "确定退出登录？",
+        success: function (res) {
+          if (res.confirm) {
+            uni.removeStorageSync("TOKEN");
+            uni.redirectTo({
+              url: "/pages/home/home",
+            });
+          } else if (res.cancel) {
+            console.log("用户点击取消");
+          }
+        },
+      });
+    },
+    /** 获取VIP状态 */
     async getVipStatus() {
       let res = await vipStatus();
       this.vip = res.data;
       console.log(res);
     },
-	/** 获取套餐 */
-	async getVipList(){
-		let res = await getVipList()
-		console.log(res)
-	},
-	/** 挑选套餐 */
+    /** 获取套餐 */
+    async getVipList() {
+      let res = await getVipList();
+      this.vipList = res.data.list
+    },
+    /** 挑选套餐 */
     tapCard(index) {
       this.cards.forEach((item, i) => {
         item.isActive = false;

@@ -79,6 +79,11 @@
           </view>
         </template>
       </uni-list-item>
+      <image
+        src="/static/empty.png"
+        style="width: 320rpx; height: 320rpx; margin: 0 auto"
+        v-if="list.length === 0"
+      ></image>
     </uni-list>
     <uni-load-more
       :status="loadType"
@@ -144,9 +149,14 @@
 
 <script>
 import { regexTel } from "./../../utils/regex.js";
+import { uuid } from "./../../utils/uuid.js";
 import { sendCode, bindUserCode, login } from "./../../api/user.js";
 import { likeItem, getList } from "./../../api/resource.js";
+import { CardList } from "./../../components/cardList.vue";
 export default {
+  components: {
+    CardList,
+  },
   data() {
     return {
       time: null,
@@ -180,21 +190,26 @@ export default {
       tagList: [
         {
           text: "全部",
-          active: false,
+          active: true,
+          sort: "", // sort为空时，sessionId取随机值
         },
         {
           text: "最新",
-          active: true,
+          active: false,
+          sort: "publishd",
         },
         {
           text: "最多收藏",
           active: false,
+          sort: "like",
         },
         {
           text: "最多解锁",
           active: false,
+          sort: "unlock",
         },
       ],
+      tagIndex: 0,
     };
   },
   methods: {
@@ -212,7 +227,6 @@ export default {
       } else {
         this.loadType = "more"; // 显示还可加载
       }
-      console.log(res);
     },
     /** 登录接口，存token */
     async login() {
@@ -295,10 +309,10 @@ export default {
         let res = await likeItem({ id: item.id, action });
         if (res.code === 0) {
           item.liked = !item.liked;
-          if(action===1){
-            item.likeNum++
-          }else{
-            item.likeNum--
+          if (action === 1) {
+            item.likeNum++;
+          } else {
+            item.likeNum--;
           }
         }
       } catch (error) {
@@ -306,12 +320,22 @@ export default {
       }
     },
     tapTag(index) {
+      if (this.tagIndex === index) return;
+      this.tagIndex = index;
+      this.pageOffset = "";
+      this.list = [];
       this.tagList.forEach((item, i) => {
         item.active = false;
         if (index === i) {
           item.active = true;
+          this.sort = item.sort;
+          this.sessionId = "";
+          if (!item.sort) {
+            this.sessionId = uuid();
+          }
         }
       });
+      this.getList();
     },
     lower: function (e) {
       console.log(e);
