@@ -1,26 +1,10 @@
 <template>
   <view class="home">
-    <!-- <button type="default" @click="open">打开</button>
-    <button type="default" @click="close">关闭</button> -->
     <view class="y-header">
       <view class="y-header-tab">
         <view :class="{ 'y-tab-active': true }">首页</view>
         <view style="margin-left: 142rpx" @click="tapTab">推荐</view>
       </view>
-      <uni-icons
-        type="personadd"
-        size="48rpx"
-        color="#fff"
-        class="person1"
-        @click="open"
-      ></uni-icons>
-      <uni-icons
-        type="closeempty"
-        size="48rpx"
-        color="#fff"
-        class="person2"
-        @click="close"
-      ></uni-icons>
       <uni-icons
         type="person"
         size="48rpx"
@@ -40,7 +24,7 @@
         </view>
       </view>
     </view>
-    
+
     <uni-list class="uni-list--waterfall home-container">
       <uni-list-item
         direction="column"
@@ -110,15 +94,15 @@
       <view class="popup-content">
         <image src="/static/logo.png" class="logo-img"></image>
         <view class="logo-text">欢迎进入月光宝盒</view>
-        <view class="send-phone"
+        <view class="send-phone" v-show="showLogin"
           >验证码已发送至<span style="margin-left: 20rpx">{{
             phoneNumber
           }}</span></view
         >
-        <view class="invitation-text"
+        <view class="invitation-text" v-show="showInvitation"
           >*有邀请码才能使用此软件，解锁任意资源</view
         >
-        <view class="input-container">
+        <view class="input-container" v-show="showInvitation">
           <input
             class="uni-input"
             type="number"
@@ -126,7 +110,7 @@
             v-model="invitationCode"
           />
         </view>
-        <view class="input-container">
+        <view class="input-container" v-show="showPhoneNumber">
           <input
             class="uni-input"
             type="number"
@@ -136,7 +120,7 @@
             maxlength="11"
           />
         </view>
-        <view class="input-container code-input">
+        <view class="input-container code-input" v-show="showLogin">
           <input
             class="uni-input"
             type="number"
@@ -149,13 +133,27 @@
           >
         </view>
 
-        <view class="active-btn" v-if="canSendCode" @click="send">
+        <view
+          class="active-btn"
+          v-show="canSendCode && showPhoneNumber"
+          @click="send"
+        >
           发送验证码
         </view>
-        <view class="disable-btn" v-else> 发送验证码 </view>
-        <view class="active-btn" @click="login"> 登录/注册 </view>
+        <view class="disable-btn" v-show="!canSendCode && showPhoneNumber">
+          发送验证码
+        </view>
+        <view class="active-btn" @click="login" v-show="showLogin">
+          登录/注册
+        </view>
 
-        <view class="active-btn" @click="bindInvitation"> 进入月光宝盒 </view>
+        <view
+          class="active-btn"
+          @click="bindInvitation"
+          v-show="showInvitation"
+        >
+          进入月光宝盒
+        </view>
 
         <view class="tips">未注册手机号验证通过后将自动注册</view>
       </view>
@@ -167,18 +165,25 @@
 <script>
 import { regexTel } from "./../../utils/regex.js";
 import { uuid } from "./../../utils/uuid.js";
-import { sendCode, bindUserCode, login } from "./../../api/user.js";
+import {
+  sendCode,
+  bindUserCode,
+  login,
+  getUserInfo,
+} from "./../../api/user.js";
 import { likeItem, getList } from "./../../api/resource.js";
 export default {
   data() {
     return {
       time: null,
       phoneNumber: "1526786318",
-      code: "", // 验证码
-      invitationCode: "", // 邀请码
-      canSendCode: false,
+      code: "", // 验证码 1234
+      invitationCode: "", // 邀请码 888888
       sendCodeTime: 60,
-      showPhoneNumber: false,
+      showPhoneNumber: true, //输入手机号 发送验证码
+      canSendCode: false, // 发送验证码高亮
+      showLogin: false, // 输入验证码 登录/注册
+      showInvitation: false, // 输入邀请码 进入月光宝盒
       page: {
         sort: "",
         pageOffset: "",
@@ -249,6 +254,20 @@ export default {
         if (res.data.token) {
           uni.setStorageSync("TOKEN", res.data.token);
         }
+        // avatar: ""
+        // invitationSaved: true
+        // nickname: "15267863181"
+        // userId: 11
+        const userRes = await getUserInfo();
+        uni.setStorageSync("USERINFO", userRes.data);
+        console.log(userRes);
+        // 未绑定邀请码则显示绑定邀请码
+        if (!userRes.data.invitationSaved) {
+          this.showInvitation = true;
+          this.showLogin = false;
+        } else {
+          this.close(); //关闭弹窗
+        }
       } catch (error) {
         console.log(error);
       }
@@ -264,12 +283,16 @@ export default {
     async send() {
       let { phoneNumber } = this;
       let res = await sendCode({ mobile: phoneNumber });
-      this.sendCodeTime = 5; // 之后改60
-      this.timer = setInterval(() => {
-        if (this.sendCodeTime > 0) {
-          this.sendCodeTime = this.sendCodeTime - 1;
-        }
-      }, 1000);
+      if (res.code === 0) {
+        this.sendCodeTime = 60; // 之后改60
+        this.timer = setInterval(() => {
+          if (this.sendCodeTime > 0) {
+            this.sendCodeTime = this.sendCodeTime - 1;
+          }
+        }, 1000);
+        this.showPhoneNumber = false;
+        this.showLogin = true;
+      }
     },
     /** 首次登录之后执行绑定邀请码 */
     async bindInvitation() {
@@ -294,23 +317,44 @@ export default {
         this.canSendCode = false;
       }
     },
+    /** 显示登录弹窗 */
     open() {
       this.$refs.popup.open("bottom");
     },
+    /** 关闭登录弹窗 */
     close() {
       this.$refs.popup.close();
     },
+    /** 跳转详情 */
     tapDetail(listItem) {
-      console.log("tapDetail");
       uni.navigateTo({
         url: `/pages/detail/detail?id=${listItem.id}`,
       });
     },
-    tapMy() {
-      // this.$refs.popup.open("bottom");
-      uni.navigateTo({
-        url: "/pages/my/my",
-      });
+    /** 点击个人信息 */
+    async tapMy() {
+      // token过期或者token不存在 显示登录弹窗，否则直接进入我的页面
+      let token = uni.getStorageSync("TOKEN");
+      if (token) {
+        console.log(token);
+        const userRes = await getUserInfo();
+        debugger
+        if (userRes.code === 0) {
+          uni.navigateTo({
+            url: "/pages/my/my",
+          });
+        } else {
+          this.open();
+        }
+      } else {
+        this.open();
+      }
+      // const userRes = await getUserInfo()
+      // console.log(userRes)
+      // this.open();
+      // uni.navigateTo({
+      //   url: "/pages/my/my",
+      // });
     },
     tapTab() {
       uni.navigateTo({
@@ -362,7 +406,10 @@ export default {
     this.getList();
   },
   onLoad: function (options) {
-    this.open()
+    console.log(options);
+    // if(options.showOpen){
+    //   this.open()
+    // }
     // setTimeout(function () {
     //   console.log("start pulldown");
     // }, 1000);
@@ -380,10 +427,6 @@ export default {
       this.loadType = "noMore";
     }, 1000);
   },
-  onShow(){
-    console.log(1223)
-    // this.open()
-  }
 };
 </script>
 
@@ -538,16 +581,6 @@ export default {
     position: absolute;
     top: 114rpx;
     right: 32rpx;
-  }
-  .person1 {
-    position: absolute;
-    top: 114rpx;
-    right: 150rpx;
-  }
-  .person2 {
-    position: absolute;
-    top: 114rpx;
-    right: 100rpx;
   }
   .status_bar {
     height: var(--status-bar-height);
