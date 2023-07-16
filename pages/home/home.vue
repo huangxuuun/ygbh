@@ -152,11 +152,7 @@ import { regexTel } from "./../../utils/regex.js";
 import { uuid } from "./../../utils/uuid.js";
 import { sendCode, bindUserCode, login } from "./../../api/user.js";
 import { likeItem, getList } from "./../../api/resource.js";
-import { CardList } from "./../../components/cardList.vue";
 export default {
-  components: {
-    CardList,
-  },
   data() {
     return {
       time: null,
@@ -196,7 +192,7 @@ export default {
         {
           text: "最新",
           active: false,
-          sort: "publishd",
+          sort: "",
         },
         {
           text: "最多收藏",
@@ -328,10 +324,11 @@ export default {
         item.active = false;
         if (index === i) {
           item.active = true;
-          this.sort = item.sort;
-          this.sessionId = "";
-          if (!item.sort) {
-            this.sessionId = uuid();
+          this.page.sort = item.sort;
+          this.page.sessionId = "";
+          console.log(item.sort);
+          if (item.sort === "") {
+            this.page.sessionId = uuid();
           }
         }
       });

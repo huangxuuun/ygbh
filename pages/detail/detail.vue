@@ -1,5 +1,8 @@
 <template>
   <view class="detail">
+    <view class="y-header-back" @click="tapBack">
+      <image src="/static/back.png" class="y-header-back__img"></image>
+    </view>
     <swiper
       class="swiper"
       circular
@@ -23,8 +26,18 @@
         <view class="time"> {{ item.publishAt }} </view>
         <view class="recommend-detail-tool-item">
           <image
-            src="/static/star.png"
+            src="/static/starfill.png"
+            alt=""
             class="recommend-detail-tool-item__image"
+            v-if="item.liked"
+            @click="collectItem(2)"
+          />
+          <image
+            src="/static/star.png"
+            alt=""
+            class="recommend-detail-tool-item__image"
+            v-else
+            @click="collectItem(1)"
           />
           <text class="recommend-detail-tool-item__text">{{
             item.likeNum
@@ -44,28 +57,38 @@
       <view class="recommend-detail__line"> </view>
       <view class="recommend-detail__action">
         <view class="recommend-detail__action-left">
-          <view>
+          <view style="display: flex; align-items: center">
             <text style="min-width: 120rpx; display: inline-block"
               >资源地址：</text
             >
-            <text class="value-text">https://h57omr.axshare.com</text>
-            <image src="/static/copy.png" alt="" class="icon" />
+            <text class="value-text">{{ item.url }}</text>
+            <image
+              src="/static/copy.png"
+              alt=""
+              class="icon"
+              @click="copyText(item.url)"
+            />
           </view>
-          <view>
+          <view style="display: flex; align-items: center">
             <text style="min-width: 120rpx; display: inline-block">密码：</text>
-            <text class="value-text">123456</text>
-            <image src="/static/copy.png" alt="" class="icon" />
+            <text class="value-text">{{ item.password }}</text>
+            <image
+              src="/static/copy.png"
+              alt=""
+              class="icon"
+              @click="copyText(item.password)"
+            />
           </view>
         </view>
         <view class="recommend-detail__action-right">
-          <view class="lock-btn"> VIP解锁 </view>
+          <view class="lock-btn" @click="unlockItem"> VIP解锁 </view>
         </view>
       </view>
-      <view class="recommend-detail__tips"> 解锁后可查看和保存全部资源！ </view>
+      <!-- <view class="recommend-detail__tips"> 解锁后可查看和保存全部资源！ </view> -->
     </view>
     <view class="info-content">
       <view class="y-section">写真集介绍</view>
-      <view >
+      <view>
         {{ item.info }}
       </view>
       <view class="y-section">写真集介绍</view>
@@ -75,13 +98,18 @@
       <view class="y-section">写真集介绍</view>
     </view>
     <view>
-      <image v-for="img in item.previewImageList" :key="img" :src="img" style="width:100vw"></image>
+      <image
+        v-for="img in item.previewImageList"
+        :key="img"
+        :src="img"
+        style="width: 100vw"
+      ></image>
     </view>
   </view>
 </template>
 
 <script>
-import { resourceDetail } from "./../../api/resource.js";
+import { resourceDetail, likeItem, unlockItem } from "./../../api/resource.js";
 export default {
   data() {
     return {
@@ -102,8 +130,46 @@ export default {
         title: "",
         unlockNum: "",
         unlocked: false,
+        password: "",
+        url: "",
       },
     };
+  },
+  methods: {
+    copyText(t) {
+      uni.setClipboardData({
+        data: t,
+        success: function () {
+          console.log("success");
+        },
+      });
+    },
+    tapBack() {
+      uni.navigateBack();
+    },
+    async unlockItem() {
+      let { item } = this;
+      if (item.id) {
+        let res = await unlockItem({ id: item.id });
+        console.log(res);
+      }
+    },
+    async collectItem(action) {
+      let { item } = this;
+      try {
+        let res = await likeItem({ id: item.id, action });
+        if (res.code === 0) {
+          item.liked = !item.liked;
+          if (action === 1) {
+            item.likeNum++;
+          } else {
+            item.likeNum--;
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
   onLoad: async function (option) {
     if (option.id) {
@@ -118,6 +184,16 @@ export default {
 .pages-detail-detail {
   background-color: #171616;
 }
+.y-header-back {
+  &__img {
+    width: 48rpx;
+    height: 48rpx;
+    margin-top: 120rpx;
+    position: relative;
+    left: 30rpx;
+  }
+}
+
 .detail {
   background-color: #171616;
   .swiper {
@@ -207,6 +283,11 @@ export default {
 
   .value-text {
     color: #ef0ec9;
+    display: inline-block;
+    width: 250rpx;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   .lock-btn {

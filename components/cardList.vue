@@ -1,12 +1,13 @@
 <template>
-  <view>
+  <!-- scroll-view版本只给my.vue里面用否则无法触发滚动加载 -->
+  <scroll-view class="card-list" :style="{ top: ListTop }"  @scrolltolower="scrolltolower"	:lower-threshold="10" style="height:900rpx" :scroll-y="true">
     <uni-list class="uni-list--waterfall">
       <uni-list-item
         direction="column"
         :border="false"
         class="uni-list-item--waterfall"
-        v-for="(item, index) in list"
-        :key="index"
+        v-for="(item) in list"
+        :key="item.id"
         clickable
       >
         <!-- 自定义 header -->
@@ -55,30 +56,69 @@
           </view>
         </template>
       </uni-list-item>
+      <image
+        src="/static/empty.png"
+        style="width: 320rpx; height: 320rpx; margin: 0 auto"
+        v-if="list.length===0"
+      ></image>
     </uni-list>
-    <image
-      src="/static/empty.png"
-      style="width: 320rpx; height: 320rpx; margin: 0 auto"
-      v-if="list.length === 0"
-    ></image>
     <uni-load-more
       :status="loadType"
-      style="top: 236rpx; position: relative; background-color: #171616"
+      style="position: relative; background-color: #171616"
+      :style="{ top: loadMoreTop }"
     ></uni-load-more>
-  </view>
+  </scroll-view>
 </template>
 
 <script>
+import { likeItem } from "./../api/resource.js";
 export default {
   props: {
-    list: [],
-    loadType: "more",
+    list: {
+      type: Array,
+      required: true,
+      default: [],
+    },
+    loadType: {
+      type: String,
+      required: true,
+      default: [],
+    },
+    ListTop: {
+      type: String,
+      required: false,
+      default: "-2rpx",
+    },
+    loadMoreTop: {
+      type: String,
+      required: false,
+      default: "-4rpx",
+    },
   },
   name: "CardList",
   data() {
     return {};
   },
   methods: {
+    async collectItem(action, item) {
+      try {
+        let res = await likeItem({ id: item.id, action });
+        if (res.code === 0) {
+          item.liked = !item.liked;
+          if (action === 1) {
+            item.likeNum++;
+          } else {
+            item.likeNum--;
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    scrolltolower(){
+      console.log('scrolltolower')
+      this.$emit('scrolltolower')
+    },
     tapDetail(listItem) {
       console.log("tapDetail");
       uni.navigateTo({
@@ -90,6 +130,9 @@ export default {
 </script>
 
 <style lang="scss">
+.card-list {
+  position: relative;
+}
 .uni-list--waterfall {
   background-color: #171616;
   padding: 8rpx;
@@ -97,8 +140,8 @@ export default {
   // 小程序 编译后会多一层标签，而其他平台没有，所以需要特殊处理一下
   ::v-deep .uni-list {
     /* #endif */
-    position: relative;
-    top: 240rpx;
+    // position: relative;
+    // top: 240rpx;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

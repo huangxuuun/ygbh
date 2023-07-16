@@ -36,12 +36,13 @@ export function resourceDetail({ id }) {
 }
 
 // 获取已收藏的资源
-export function getLikeList({ pageOffset }) {
+export function getLikeList({ pageOffset,pageSize }) {
   return request({
     url: "/resource/liked",
     method: "POST",
     data: {
       pageOffset,
+      pageSize
     },
     loading: true, //是否开启loading动画
   });
@@ -62,12 +63,13 @@ export function getList({ sort, pageOffset, pageSize, sessionId }) {
 }
 
 //已解锁的资源
-export function getUnlockedList({ sort, pageOffset, pageSize, sessionId }) {
+export function getUnlockedList({ pageOffset, pageSize }) {
   return request({
     url: "/resource/unlocked",
     method: "POST",
     data: {
       pageOffset,
+      pageSize
     },
     loading: true, //是否开启loading动画
   });
