@@ -1,10 +1,26 @@
 <template>
   <view class="home">
+    <!-- <button type="default" @click="open">打开</button>
+    <button type="default" @click="close">关闭</button> -->
     <view class="y-header">
       <view class="y-header-tab">
         <view :class="{ 'y-tab-active': true }">首页</view>
         <view style="margin-left: 142rpx" @click="tapTab">推荐</view>
       </view>
+      <uni-icons
+        type="personadd"
+        size="48rpx"
+        color="#fff"
+        class="person1"
+        @click="open"
+      ></uni-icons>
+      <uni-icons
+        type="closeempty"
+        size="48rpx"
+        color="#fff"
+        class="person2"
+        @click="close"
+      ></uni-icons>
       <uni-icons
         type="person"
         size="48rpx"
@@ -24,6 +40,7 @@
         </view>
       </view>
     </view>
+    
     <uni-list class="uni-list--waterfall home-container">
       <uni-list-item
         direction="column"
@@ -345,6 +362,7 @@ export default {
     this.getList();
   },
   onLoad: function (options) {
+    this.open()
     // setTimeout(function () {
     //   console.log("start pulldown");
     // }, 1000);
@@ -362,6 +380,10 @@ export default {
       this.loadType = "noMore";
     }, 1000);
   },
+  onShow(){
+    console.log(1223)
+    // this.open()
+  }
 };
 </script>
 
@@ -517,7 +539,16 @@ export default {
     top: 114rpx;
     right: 32rpx;
   }
-
+  .person1 {
+    position: absolute;
+    top: 114rpx;
+    right: 150rpx;
+  }
+  .person2 {
+    position: absolute;
+    top: 114rpx;
+    right: 100rpx;
+  }
   .status_bar {
     height: var(--status-bar-height);
     width: 100%;
