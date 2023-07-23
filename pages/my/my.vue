@@ -11,20 +11,20 @@
           class="y-header-info__avator"
         ></image>
         <view class="y-header-info__detail">
-          <view class="y-header-info__detail__phone">15267863184</view>
+          <view class="y-header-info__detail__phone">{{userData.nickname}}</view>
           <view
             >会员到期时间：<text class="value-text"
-              >永久{{ vip.vipExpireAt }}</text
+              >{{ vip.vipExpireAt }}</text
             ></view
           >
           <view class="y-header-info__detail__describe">
-            <view>今日可解锁: <text class="value-text">10</text></view>
+            <view>今日可解锁: <text class="value-text">{{ vip.unlockQuote }}</text></view>
             <view
-              >已用: <text class="value-text">10{{ vip.used }}</text></view
+              >已用: <text class="value-text">{{ vip.used }}</text></view
             >
             <view
               >剩余:
-              <text class="value-text">10{{ vip.unlockQuote }}</text></view
+              <text class="value-text">{{ vip.unlockQuote - vip.used }}</text></view
             >
           </view>
         </view>
@@ -135,6 +135,7 @@ export default {
   },
   data() {
     return {
+      userData:JSON.parse(uni.getStorageSync('USERINFO')),
       swiperCurrent: 0,
       current: 0,
       tabs: ["会员充值", "我的收藏", "我的资源"],
@@ -204,6 +205,7 @@ export default {
     this.getVipList();
     this.getLikeList();
     this.getUnlockedList();
+    console.log(uni.getStorageSync('USERINFO'),'userData')
   },
   methods: {
     async getLikeList() {
@@ -250,6 +252,7 @@ export default {
         success: function (res) {
           if (res.confirm) {
             uni.removeStorageSync("TOKEN");
+            uni.removeStorageSync("USERINFO");
             uni.redirectTo({
               url: "/pages/home/home",
             });

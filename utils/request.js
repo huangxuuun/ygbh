@@ -15,10 +15,9 @@ export default async function request(params) {
             method: params.method,
             header: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTAwNDExMDgsImlhdCI6MTY4OTE3NzEwOCwidWlkIjoxMX0.mld_132-5vjIaHZI0wu9_TGzbPuZ3KheKyKVfVXOzaw1234"
-                // 'Authorization': 'Bearer '
-                // 'Authorization': 'Bearer ' + uni.getStorageSync('TOKEN')
-                // 'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTAwNDExMDgsImlhdCI6MTY4OTE3NzEwOCwidWlkIjoxMX0.mld_132-5vjIaHZI0wu9_TGzbPuZ3KheKyKVfVXOzaw"
+                // 'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTAwNDExMDgsImlhdCI6MTY4OTE3NzEwOCwidWlkIjoxMX0.mld_132-5vjIaHZI0wu9_TGzbPuZ3KheKyKVfVXOzaw1234"
+                // // 'Authorization': 'Bearer '
+                'Authorization': 'Bearer ' + uni.getStorageSync('TOKEN')
             },
             data: params.data,
             complete: () => {

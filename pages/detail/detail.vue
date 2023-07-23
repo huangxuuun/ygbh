@@ -81,10 +81,11 @@
           </view>
         </view>
         <view class="recommend-detail__action-right">
-          <view class="lock-btn" @click="unlockItem"> VIP解锁 </view>
+          <view class="lock-btn" @click="unlockItem" v-if="!item.unlocked"> VIP解锁 </view>
+          <view class="lock-btn" v-else> 已解锁 </view>
         </view>
       </view>
-      <!-- <view class="recommend-detail__tips"> 解锁后可查看和保存全部资源！ </view> -->
+      <view class="recommend-detail__tips" v-if="!item.unlocked"> 解锁后可查看和保存全部资源！ </view>
     </view>
     <view class="info-content">
       <view class="y-section">写真集介绍</view>
@@ -151,6 +152,9 @@ export default {
       let { item } = this;
       if (item.id) {
         let res = await unlockItem({ id: item.id });
+        let { url, password } = res.data
+        this.item.url = url;
+        this.item.url = password;
         console.log(res);
       }
     },
@@ -223,7 +227,7 @@ export default {
 
     &__action {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: center;
     }
 

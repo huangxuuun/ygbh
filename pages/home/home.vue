@@ -176,7 +176,7 @@ export default {
   data() {
     return {
       time: null,
-      phoneNumber: "1526786318",
+      phoneNumber: "",
       code: "", // 验证码 1234
       invitationCode: "", // 邀请码 888888
       sendCodeTime: 60,
@@ -252,14 +252,15 @@ export default {
       try {
         const res = await login({ mobile, code });
         if (res.data.token) {
-          uni.setStorageSync("TOKEN", res.data.token);
+          await uni.setStorageSync("TOKEN", res.data.token);
         }
         // avatar: ""
         // invitationSaved: true
         // nickname: "15267863181"
         // userId: 11
         const userRes = await getUserInfo();
-        uni.setStorageSync("USERINFO", userRes.data);
+        debugger
+        uni.setStorageSync("USERINFO", JSON.stringify(userRes.data));
         console.log(userRes);
         // 未绑定邀请码则显示绑定邀请码
         if (!userRes.data.invitationSaved) {
@@ -304,6 +305,7 @@ export default {
             title: "绑定成功",
             icon: "success",
           });
+          this.close()
         }
       } catch (error) {
         console.log(error);
@@ -338,15 +340,21 @@ export default {
       if (token) {
         console.log(token);
         const userRes = await getUserInfo();
-        debugger
-        if (userRes.code === 0) {
+        // code===0 表示token未过期，
+        if (userRes.code === 0 && userRes.data.invitationSaved) {
           uni.navigateTo({
             url: "/pages/my/my",
           });
-        } else {
+        } else if (userRes.code === 0 && !userRes.data.invitationSaved) {
+          this.showInvitation = true;
+          this.showLogin = false;
+          this.showPhoneNumber = false;
           this.open();
         }
       } else {
+        this.showInvitation = false;
+        this.showLogin = false;
+        this.showPhoneNumber = true;
         this.open();
       }
       // const userRes = await getUserInfo()
