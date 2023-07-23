@@ -385,7 +385,7 @@ export default {
       }
     },
     tapTag(index) {
-      if (this.tagIndex === index) return;
+      // if (this.tagIndex === index) return;
       this.tagIndex = index;
       this.pageOffset = "";
       this.list = [];
@@ -411,6 +411,7 @@ export default {
     },
   },
   onReady: function () {
+    this.page.sessionId = uuid();
     this.getList();
   },
   onLoad: function (options) {
@@ -435,6 +436,9 @@ export default {
       this.loadType = "noMore";
     }, 1000);
   },
+  onShow(){
+    this.tapTag(this.tagIndex)
+  }
 };
 </script>
 

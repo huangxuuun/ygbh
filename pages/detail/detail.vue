@@ -14,10 +14,7 @@
       :duration="duration"
     >
       <swiper-item v-for="banner in item.bannerList" :key="banner">
-        <view
-          class="swiper-item"
-          :style="{ 'background-image': 'url(' + banner + ')' }"
-        ></view>
+        <image style="width: 100%;" mode="aspectFit" :src="banner"></image>
       </swiper-item>
     </swiper>
     <view class="recommend-detail">
@@ -81,11 +78,15 @@
           </view>
         </view>
         <view class="recommend-detail__action-right">
-          <view class="lock-btn" @click="unlockItem" v-if="!item.unlocked"> VIP解锁 </view>
+          <view class="lock-btn" @click="unlockItem" v-if="!item.unlocked">
+            VIP解锁
+          </view>
           <view class="lock-btn" v-else> 已解锁 </view>
         </view>
       </view>
-      <view class="recommend-detail__tips" v-if="!item.unlocked"> 解锁后可查看和保存全部资源！ </view>
+      <view class="recommend-detail__tips" v-if="!item.unlocked">
+        解锁后可查看和保存全部资源！
+      </view>
     </view>
     <view class="info-content">
       <view class="y-section">写真集介绍</view>
@@ -98,12 +99,14 @@
       </view>
       <view class="y-section">写真集介绍</view>
     </view>
-    <view>
+    <view style="padding: 30rpx;">
       <image
-        v-for="img in item.previewImageList"
+        v-for="(img, index) in item.previewImageList"
         :key="img"
         :src="img"
-        style="width: 100vw"
+        style="width: 100%;height: 1000rpx;"
+        mode="aspectFill" 
+		@click="viewImg(item.previewImageList, index)"
       ></image>
     </view>
   </view>
@@ -137,6 +140,12 @@ export default {
     };
   },
   methods: {
+	viewImg(previewImageList, index){
+		uni.previewImage({
+			current:index,
+			urls:previewImageList
+		})
+	},
     copyText(t) {
       uni.setClipboardData({
         data: t,
@@ -152,7 +161,7 @@ export default {
       let { item } = this;
       if (item.id) {
         let res = await unlockItem({ id: item.id });
-        let { url, password } = res.data
+        let { url, password } = res.data;
         this.item.url = url;
         this.item.url = password;
         console.log(res);
@@ -244,7 +253,7 @@ export default {
       font-weight: 400;
       color: #ef0ec9;
       position: absolute;
-      top: 170rpx;
+      bottom: 26rpx;
       left: 150rpx;
     }
   }

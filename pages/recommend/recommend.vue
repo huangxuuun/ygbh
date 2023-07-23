@@ -17,7 +17,7 @@
     </view>
     <view class="recommend-container">
       <swiper
-        class="swiper"
+        style="height:100%;width:100%"
         circular
         :indicator-dots="indicatorDots"
         :autoplay="autoplay"
@@ -26,28 +26,32 @@
         indicator-active-color="linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%)"
         :duration="duration"
       >
-        <swiper-item>
-          <view class="swiper-item uni-bg-red">A</view>
-        </swiper-item>
-        <swiper-item>
-          <view class="swiper-item uni-bg-green">B</view>
-        </swiper-item>
-        <swiper-item>
-          <view class="swiper-item uni-bg-blue">C</view>
+        <swiper-item v-for="banner in item.bannerList" :key="banner">
+          <image style="width: 100%;height: 100%;" mode="aspectFit" :src="banner"></image>
         </swiper-item>
       </swiper>
       <view class="recommend-detail">
-        <view class="recommend-detail__title"
-          >【8G】虎牙直播雅雅主播10套合集下载</view
-        >
+        <view class="recommend-detail__title">{{ item.title }}</view>
         <view class="recommend-detail-tool">
-          <view class="time"> 2022.2.2 </view>
+          <view class="time"> {{ item.publishAt }} </view>
           <view class="recommend-detail-tool-item">
             <image
-              src="/static/star.png"
+              src="/static/starfill.png"
+              alt=""
               class="recommend-detail-tool-item__image"
+              v-if="item.liked"
+              @click="collectItem(2)"
             />
-            <text class="recommend-detail-tool-item__text">1221</text>
+            <image
+              src="/static/star.png"
+              alt=""
+              class="recommend-detail-tool-item__image"
+              v-else
+              @click="collectItem(1)"
+            />
+            <text class="recommend-detail-tool-item__text">{{
+              item.likeNum
+            }}</text>
           </view>
           <view class="recommend-detail-tool-item">
             <image
@@ -55,32 +59,47 @@
               alt=""
               class="recommend-detail-tool-item__image"
             />
-            <text class="recommend-detail-tool-item__text">1223</text>
+            <text class="recommend-detail-tool-item__text">{{
+              item.unlockNum
+            }}</text>
           </view>
         </view>
         <view class="recommend-detail__line"> </view>
         <view class="recommend-detail__action">
           <view class="recommend-detail__action-left">
-            <view>
+            <view style="display: flex; align-items: center">
               <text style="min-width: 120rpx; display: inline-block"
                 >资源地址：</text
               >
-              <text class="value-text">https://h57omr.axshare.com</text>
-              <image src="/static/copy.png" alt="" class="icon" />
+              <text class="value-text">{{ item.url }}</text>
+              <image
+                src="/static/copy.png"
+                alt=""
+                class="icon"
+                @click="copyText(item.url)"
+              />
             </view>
-            <view>
+            <view style="display: flex; align-items: center">
               <text style="min-width: 120rpx; display: inline-block"
                 >密码：</text
               >
-              <text class="value-text">123456</text>
-              <image src="/static/copy.png" alt="" class="icon" />
+              <text class="value-text">{{ item.password }}</text>
+              <image
+                src="/static/copy.png"
+                alt=""
+                class="icon"
+                @click="copyText(item.password)"
+              />
             </view>
           </view>
           <view class="recommend-detail__action-right">
-            <view class="lock-btn"> VIP解锁 </view>
+            <view class="lock-btn" @click="unlockItem" v-if="!item.unlocked">
+              VIP解锁
+            </view>
+            <view class="lock-btn" v-else> 已解锁 </view>
           </view>
         </view>
-        <view class="recommend-detail__tips">
+        <view class="recommend-detail__tips" v-if="!item.unlocked">
           解锁后可查看和保存全部资源！
         </view>
       </view>
@@ -89,6 +108,13 @@
 </template>
 
 <script>
+import { uuid } from "./../../utils/uuid.js";
+import {
+  resourceDetail,
+  likeItem,
+  unlockItem,
+  getList,
+} from "./../../api/resource.js";
 export default {
   data() {
     return {
@@ -97,9 +123,93 @@ export default {
       autoplay: true,
       interval: 2000,
       duration: 500,
+
+      page: {
+        sort: "",
+        pageOffset: "",
+        pageSize: 10,
+        sessionId: uuid(),
+      },
+      loadType: "more", // loading noMore
+      list: [
+        // {
+        //   id: 0,
+        //   bannerList: [
+        //     "https://img2.baidu.com/it/u=1115987748,3793792879&fm=253&fmt=auto&app=138&f=JPEG?w=890&h=500",
+        //   ],
+        //   title: "【8G】虎牙直播雅雅主播10套合集下载",
+        //   publishAt: "2022.12.22",
+        //   unlockNum: 1231,
+        //   likeNum: 1231,
+        //   liked: true,
+        //   unlocked: true,
+        // },
+      ],
+      item: {
+        id: 0,
+        bannerList: [],
+        title: "",
+        publishAt: "",
+        unlockNum: 0,
+        likeNum: 0,
+        liked: false,
+        unlocked: false,
+        url: "",
+        password: "",
+      },
     };
   },
   methods: {
+    /**获取资源列表 */
+    async getList() {
+      const { sort, pageOffset, pageSize, sessionId } = this.page;
+      let res = await getList({ sort, pageOffset, pageSize, sessionId });
+      let { list, nextOffset } = res.data;
+      list.forEach((item) => {
+        this.list.push(item);
+      });
+      this.page.pageOffset = nextOffset;
+      if (!this.page.pageOffset) {
+        this.loadType = "noMore"; // 显示不再加载
+      } else {
+        this.loadType = "more"; // 显示还可加载
+      }
+      this.item = this.list[5];
+    },
+    copyText(t) {
+      uni.setClipboardData({
+        data: t,
+        success: function () {
+          console.log("success");
+        },
+      });
+    },
+    async unlockItem() {
+      let { item } = this;
+      if (item.id) {
+        let res = await unlockItem({ id: item.id });
+        let { url, password } = res.data;
+        this.item.url = url;
+        this.item.url = password;
+        console.log(res);
+      }
+    },
+    async collectItem(action) {
+      let { item } = this;
+      try {
+        let res = await likeItem({ id: item.id, action });
+        if (res.code === 0) {
+          item.liked = !item.liked;
+          if (action === 1) {
+            item.likeNum++;
+          } else {
+            item.likeNum--;
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     tapMy() {
       uni.navigateTo({
         url: "/pages/my/my",
@@ -108,6 +218,9 @@ export default {
     tapTab() {
       uni.navigateBack();
     },
+  },
+  onShow() {
+    this.getList();
   },
 };
 </script>
@@ -193,7 +306,7 @@ export default {
 
     &__action {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: center;
     }
 
@@ -210,7 +323,7 @@ export default {
       font-weight: 400;
       color: #ef0ec9;
       position: absolute;
-      top: 170rpx;
+      bottom: 26rpx;
       left: 150rpx;
     }
   }
