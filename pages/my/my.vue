@@ -144,8 +144,6 @@ export default {
       userData:JSON.parse(uni.getStorageSync('USERINFO')),
       swiperCurrent: 0,
       current: 0,
-      showWechatPay: 0,
-      showAlipay: 0,
       payStatusWaitSeconds: 10,
       tabs: ["会员充值", "我的收藏", "我的资源"],
       // cards: [
