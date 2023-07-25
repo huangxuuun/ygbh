@@ -112,11 +112,11 @@
       </swiper>
     </view>
     <view class="pay-container" v-show="current === 0">
-      <view class="pay-item pay-wechat">
+      <view class="pay-item pay-wechat" v-if="showWechatPay" @click="handleWechatPay">
         <image src="/static/wechat.png" mode="" class="pay-item-image"></image>
         <view> 微信充值 </view>
       </view>
-      <view class="pay-item pay-zfb">
+      <view class="pay-item pay-zfb" v-if="showAlipay" @click="handleAlipay">
         <image src="/static/zfb.png" mode="" class="pay-item-image"></image>
         <view> 支付宝充值 </view>
       </view>
@@ -127,7 +127,13 @@
 <script>
 import { vipStatus, getVipList } from "./../../api/vip.js";
 import { getLikeList, getUnlockedList } from "./../../api/resource";
+import { wechatBuy, paymentStatus } from './../../api/vip.js'
 import CardList from "./../../components/cardList.vue"
+
+
+const PAY_TYPE_WECHAT = 1;
+const PAY_TYPE_ALIPAY = 2;
+
 export default {
   components: {
     CardList
@@ -138,6 +144,9 @@ export default {
       userData:JSON.parse(uni.getStorageSync('USERINFO')),
       swiperCurrent: 0,
       current: 0,
+      showWechatPay: 0,
+      showAlipay: 0,
+      payStatusWaitSeconds: 10,
       tabs: ["会员充值", "我的收藏", "我的资源"],
       // cards: [
       //   {
@@ -179,6 +188,8 @@ export default {
         //   isActive: false,
         // },
       ],
+      showAlipay: false,
+      showWechatPay: false,
       vip: {
         enable: false,
         periodFlag: "",
@@ -271,11 +282,13 @@ export default {
     /** 获取套餐 */
     async getVipList() {
       let res = await getVipList();
-      let { list } = res.data;
+      let { payTypeList, list } = res.data;
       list.forEach((item) => {
         item.isActive = false;
       });
       this.vipList = list;
+      this.showWechatPay = payTypeList.findIndex(e => e === PAY_TYPE_WECHAT) >= 0;
+      this.showAlipay = payTypeList.findIndex(e => e === PAY_TYPE_ALIPAY) >= 0;
       this.vipList[0].isActive = true;
     },
     /** 挑选套餐 */
@@ -300,6 +313,66 @@ export default {
     changeTab(index) {
       this.swiperCurrent = index;
       console.log("当前选中的项：" + index);
+    },
+    getSelectedPackageId() {
+      const vipPackage = this.vipList.find(e => e.isActive);
+      return vipPackage ? vipPackage.id : 0;
+    },
+    handleWechatPay() {
+      const packageId = this.getSelectedPackageId();
+      if (!packageId) {
+        return;
+      }
+      wechatBuy(packageId).then(res => {
+        uni.requestPayment({
+          provider: 'wxpay',
+          orderInfo: res.data.orderInfo,
+          success: (payRes) => {
+            this.handlePayResult(res.data.orderNo)
+          },
+          fail: (payRes) => {
+            uni.showToast({
+              title: '支付失败',
+              icon: 'error'
+            });
+          }
+        })
+      });
+    },
+    handleAlipay() {
+      console.log('handle alipay')
+    },
+    handlePayResult(orderNo) {
+      uni.showLoading({
+        mask: true
+      })
+      const start = new Date().getTime();
+      const that = this;
+      const payIntervalIndex = setInterval(function() {
+        paymentStatus(orderNo).then(res => {
+          if (res.data.status  == 1) {
+            uni.hideLoading()
+            clearInterval(payIntervalIndex);
+            that.getVipStatus();
+            uni.showToast({
+              title: '充值成功',
+              icon: 'success'
+            });
+          }
+        })
+        
+        const now = new Date().getTime();
+        if (now - start > that.payStatusWaitSeconds * 1000) {
+          clearInterval(payIntervalIndex);
+          uni.hideLoading()
+          uni.showToast({
+            title: '订单支付中，请稍后刷新页面查看充值状态，请勿重复支付',
+            icon: 'loading',
+            duration: 3000
+          });
+        } 
+      }, 2000);
+
     },
     upper: function (e) {
       console.log(e);

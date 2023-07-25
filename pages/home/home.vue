@@ -214,7 +214,7 @@ export default {
         {
           text: "最新",
           active: false,
-          sort: "",
+          sort: "published",
         },
         {
           text: "最多收藏",
@@ -259,7 +259,7 @@ export default {
         // nickname: "15267863181"
         // userId: 11
         const userRes = await getUserInfo();
-        debugger
+        // debugger
         uni.setStorageSync("USERINFO", JSON.stringify(userRes.data));
         console.log(userRes);
         // 未绑定邀请码则显示绑定邀请码

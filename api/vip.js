@@ -13,13 +13,12 @@ export function wechatCallBack() {
 
 
 //微信购买会员
-export function wechatBuy({id,payType}) {
+export function wechatBuy(id) {
     return request({
         url: '/vip/buy/wechat',
         method: 'POST',
         data:{
-            id,
-            payType
+            id
         },
         loading: true, //是否开启loading动画
     })
@@ -50,3 +49,12 @@ export function vipStatus() {
 }
 
 
+export function paymentStatus(orderNo) {
+    return request({
+        url: '/vip/payment-status',
+        method: 'POST',
+        data: {
+          orderNo
+        }
+    })
+}
