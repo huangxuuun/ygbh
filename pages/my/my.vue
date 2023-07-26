@@ -53,7 +53,10 @@
         @animationfinish="animationFinished"
       >
         <swiper-item class="swiper-item">
-          <view class="y-section">选择会员套餐</view>
+          <view class="y-section">
+            <view class="y-section-line"></view>
+            <text>选择会员套餐</text>
+          </view>
           <view class="pay-card-container">
             <view
               class="pay-card"
@@ -85,7 +88,10 @@
               </view>
             </view>
           </view>
-          <view class="y-section">注意事项</view>
+          <view class="y-section">
+            <view class="y-section-line"></view>
+            <text>注意事项</text>
+          </view>
           <view class="detail-text">
             <view>1.购买会员套餐之后，可解锁任意资源</view>
             <view
@@ -237,10 +243,12 @@ export default {
       }
     },
     collectlower() {
+      if( this.collectPage.loadType === "noMore") return
       this.getLikeList()
       console.log("collectlower");
     },
     resourcelower() {
+      if( this.resourcePage.loadType === "noMore") return
       this.getUnlockedList()
       console.log("resourcelower");
     },
@@ -416,21 +424,17 @@ export default {
   font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.6);
-  position: relative;
-  text-indent: 20rpx;
   margin: 32rpx 0;
+  display: flex;
+  align-items: center;
 }
-
-.y-section::before {
-  content: "";
-  display: block;
-  width: 6rpx;
-  height: 24rpx;
-  background: linear-gradient(315deg, #8b3fff 0%, #ef0ec9 100%);
-  border-radius: 4rpx;
-  position: absolute;
-  top: 3rpx;
-}
+.y-section-line {
+    width: 6rpx;
+    height: 24rpx;
+    background: linear-gradient(315deg, #8b3fff 0%, #ef0ec9 100%);
+    border-radius: 4rpx;
+    margin-right: 20rpx;
+  }
 
 .pay-card-container {
   display: flex;

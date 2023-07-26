@@ -7,122 +7,10 @@
           >推荐</view
         >
       </view>
-      <uni-icons
-        type="person"
-        size="48rpx"
-        color="#fff"
-        class="person"
-        @click="tapMy"
-      ></uni-icons>
+      <People></People>
     </view>
-    <!-- <uni-list>
-      <uni-list-item direction="column" :border="false" clickable>
-        <template v-slot:header>
-          <view></view>
-        </template>
-        <template v-slot:body>
-          <view class="recommend-container">
-            <swiper
-              style="height: 100%; width: 100%"
-              circular
-              :indicator-dots="indicatorDots"
-              :autoplay="autoplay"
-              :interval="interval"
-              indicator-color="rgba(255,255,255,0.2)"
-              indicator-active-color="linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%)"
-              :duration="duration"
-            >
-              <swiper-item v-for="banner in item.bannerList" :key="banner">
-                <image
-                  style="width: 100%; height: 100%"
-                  mode="aspectFit"
-                  :src="banner"
-                ></image>
-              </swiper-item>
-            </swiper>
-            <view class="recommend-detail">
-              <view class="recommend-detail__title">{{ item.title }}</view>
-              <view class="recommend-detail-tool">
-                <view class="time"> {{ item.publishAt }} </view>
-                <view class="recommend-detail-tool-item">
-                  <image
-                    src="/static/starfill.png"
-                    alt=""
-                    class="recommend-detail-tool-item__image"
-                    v-if="item.liked"
-                    @click="collectItem(2)"
-                  />
-                  <image
-                    src="/static/star.png"
-                    alt=""
-                    class="recommend-detail-tool-item__image"
-                    v-else
-                    @click="collectItem(1)"
-                  />
-                  <text class="recommend-detail-tool-item__text">{{
-                    item.likeNum
-                  }}</text>
-                </view>
-                <view class="recommend-detail-tool-item">
-                  <image
-                    src="/static/lock.png"
-                    alt=""
-                    class="recommend-detail-tool-item__image"
-                  />
-                  <text class="recommend-detail-tool-item__text">{{
-                    item.unlockNum
-                  }}</text>
-                </view>
-              </view>
-              <view class="recommend-detail__line"> </view>
-              <view class="recommend-detail__action">
-                <view class="recommend-detail__action-left">
-                  <view style="display: flex; align-items: center">
-                    <text style="min-width: 120rpx; display: inline-block"
-                      >资源地址：</text
-                    >
-                    <text class="value-text">{{ item.url }}</text>
-                    <image
-                      src="/static/copy.png"
-                      alt=""
-                      class="icon"
-                      @click="copyText(item.url)"
-                    />
-                  </view>
-                  <view style="display: flex; align-items: center">
-                    <text style="min-width: 120rpx; display: inline-block"
-                      >密码：</text
-                    >
-                    <text class="value-text">{{ item.password }}</text>
-                    <image
-                      src="/static/copy.png"
-                      alt=""
-                      class="icon"
-                      @click="copyText(item.password)"
-                    />
-                  </view>
-                </view>
-                <view class="recommend-detail__action-right">
-                  <view
-                    class="lock-btn"
-                    @click="unlockItem"
-                    v-if="!item.unlocked"
-                  >
-                    VIP解锁
-                  </view>
-                  <view class="lock-btn" v-else> 已解锁 </view>
-                </view>
-              </view>
-              <view class="recommend-detail__tips" v-if="!item.unlocked">
-                解锁后可查看和保存全部资源！
-              </view>
-            </view>
-          </view>
-        </template>
-      </uni-list-item>
-    </uni-list> -->
     <swiper :vertical="true" style="width: 100%; height: calc(100vh - 176rpx)">
-      <swiper-item v-for="item in list" :key="item.id">
+      <swiper-item v-for="(item,index) in list" :key="item.id">
         <view class="recommend-container">
           <swiper
             style="height: calc(100vh - 500rpx); width: 100%"
@@ -152,14 +40,14 @@
                   alt=""
                   class="recommend-detail-tool-item__image"
                   v-if="item.liked"
-                  @click="collectItem(2)"
+                  @click="collectItem(2,index)"
                 />
                 <image
                   src="/static/star.png"
                   alt=""
                   class="recommend-detail-tool-item__image"
                   v-else
-                  @click="collectItem(1)"
+                  @click="collectItem(1,index)"
                 />
                 <text class="recommend-detail-tool-item__text">{{
                   item.likeNum
@@ -208,7 +96,7 @@
               <view class="recommend-detail__action-right">
                 <view
                   class="lock-btn"
-                  @click="unlockItem"
+                  @click="unlockItem(index)"
                   v-if="!item.unlocked"
                 >
                   VIP解锁
@@ -226,12 +114,15 @@
 <script>
 import { uuid } from "./../../utils/uuid.js";
 import {
-  resourceDetail,
   likeItem,
   unlockItem,
   getList,
 } from "./../../api/resource.js";
+import People from "../../components/people.vue";
 export default {
+  components: {
+    People,
+  },
   data() {
     return {
       background: ["color1", "color2", "color3"],
@@ -299,18 +190,18 @@ export default {
         },
       });
     },
-    async unlockItem() {
-      let { item } = this;
+    async unlockItem(index) {
+      let item  = this.list[index];
       if (item.id) {
         let res = await unlockItem({ id: item.id });
         let { url, password } = res.data;
-        this.item.url = url;
-        this.item.url = password;
+        this.list[index].url = url;
+        this.list[index].url = password;
         console.log(res);
       }
     },
-    async collectItem(action) {
-      let { item } = this;
+    async collectItem(action,index) {
+      let item  = this.list[index];
       try {
         let res = await likeItem({ id: item.id, action });
         if (res.code === 0) {
@@ -325,16 +216,13 @@ export default {
         console.log(error);
       }
     },
-    tapMy() {
-      uni.navigateTo({
-        url: "/pages/my/my",
-      });
-    },
     tapTab() {
       uni.navigateBack();
     },
   },
   onShow() {
+    this.page.pageOffset = ''
+    this.list = []
     this.getList();
   },
 };
