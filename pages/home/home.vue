@@ -5,13 +5,7 @@
         <view :class="{ 'y-tab-active': true }">首页</view>
         <view style="margin-left: 142rpx" @click="tapTab">推荐</view>
       </view>
-      <uni-icons
-        type="person"
-        size="48rpx"
-        color="#fff"
-        class="person"
-        @click="tapMy"
-      ></uni-icons>
+      <People></People>
       <view class="y-tag-container">
         <view
           v-for="(tag, index) in tagList"
@@ -90,100 +84,19 @@
       :status="loadType"
       style="top: 236rpx; position: relative; background-color: #171616"
     ></uni-load-more>
-    <uni-popup ref="popup" background-color="#252525">
-      <view class="popup-content">
-        <image src="/static/logo.png" class="logo-img"></image>
-        <view class="logo-text">欢迎进入月光宝盒</view>
-        <view class="send-phone" v-show="showLogin"
-          >验证码已发送至<span style="margin-left: 20rpx">{{
-            phoneNumber
-          }}</span></view
-        >
-        <view class="invitation-text" v-show="showInvitation"
-          >*有邀请码才能使用此软件，解锁任意资源</view
-        >
-        <view class="input-container" v-show="showInvitation">
-          <input
-            class="uni-input"
-            type="number"
-            placeholder="邀请码"
-            v-model="invitationCode"
-          />
-        </view>
-        <view class="input-container" v-show="showPhoneNumber">
-          <input
-            class="uni-input"
-            type="number"
-            placeholder="请输入手机号"
-            @input="telInput"
-            v-model="phoneNumber"
-            maxlength="11"
-          />
-        </view>
-        <view class="input-container code-input" v-show="showLogin">
-          <input
-            class="uni-input"
-            type="number"
-            placeholder="请输入验证码"
-            v-model="code"
-            style="width: 250rpx"
-          />
-          <span class="resend-text" @click="resend"
-            >重新发送({{ sendCodeTime }}s)</span
-          >
-        </view>
-
-        <view
-          class="active-btn"
-          v-show="canSendCode && showPhoneNumber"
-          @click="send"
-        >
-          发送验证码
-        </view>
-        <view class="disable-btn" v-show="!canSendCode && showPhoneNumber">
-          发送验证码
-        </view>
-        <view class="active-btn" @click="login" v-show="showLogin">
-          登录/注册
-        </view>
-
-        <view
-          class="active-btn"
-          @click="bindInvitation"
-          v-show="showInvitation"
-        >
-          进入月光宝盒
-        </view>
-
-        <view class="tips">未注册手机号验证通过后将自动注册</view>
-      </view>
-      <view class="close-btn" @click="close"></view>
-    </uni-popup>
   </view>
 </template>
 
 <script>
-import { regexTel } from "./../../utils/regex.js";
 import { uuid } from "./../../utils/uuid.js";
-import {
-  sendCode,
-  bindUserCode,
-  login,
-  getUserInfo,
-} from "./../../api/user.js";
 import { likeItem, getList } from "./../../api/resource.js";
+import People from "../../components/people.vue";
 export default {
+  components: {
+    People,
+  },
   data() {
     return {
-      time: null,
-      phoneNumber: "",
-      code: "", // 验证码 1234
-      invitationCode: "", // 邀请码 888888
-      sendCodeTime: 60,
-      showPhoneNumber: true, //输入手机号 发送验证码
-      canSendCode: false, // 发送验证码高亮
-      showLogin: false, // 输入验证码 登录/注册
-      showInvitation: false, // 输入邀请码 进入月光宝盒
       page: {
         sort: "",
         pageOffset: "",
@@ -246,6 +159,7 @@ export default {
         this.loadType = "more"; // 显示还可加载
       }
     },
+
     /** 登录接口，存token */
     async login() {
       const { phoneNumber: mobile, code } = this;
@@ -327,42 +241,12 @@ export default {
     close() {
       this.$refs.popup.close();
     },
+
     /** 跳转详情 */
     tapDetail(listItem) {
       uni.navigateTo({
         url: `/pages/detail/detail?id=${listItem.id}`,
       });
-    },
-    /** 点击个人信息 */
-    async tapMy() {
-      // token过期或者token不存在 显示登录弹窗，否则直接进入我的页面
-      let token = uni.getStorageSync("TOKEN");
-      if (token) {
-        console.log(token);
-        const userRes = await getUserInfo();
-        // code===0 表示token未过期，
-        if (userRes.code === 0 && userRes.data.invitationSaved) {
-          uni.navigateTo({
-            url: "/pages/my/my",
-          });
-        } else if (userRes.code === 0 && !userRes.data.invitationSaved) {
-          this.showInvitation = true;
-          this.showLogin = false;
-          this.showPhoneNumber = false;
-          this.open();
-        }
-      } else {
-        this.showInvitation = false;
-        this.showLogin = false;
-        this.showPhoneNumber = true;
-        this.open();
-      }
-      // const userRes = await getUserInfo()
-      // console.log(userRes)
-      // this.open();
-      // uni.navigateTo({
-      //   url: "/pages/my/my",
-      // });
     },
     tapTab() {
       uni.navigateTo({
@@ -410,35 +294,21 @@ export default {
       console.log("当前选中的项：" + index);
     },
   },
-  onReady: function () {
-    // this.page.sessionId = uuid();
-    // this.getList();
-  },
-  onLoad: function (options) {
-    console.log(options);
-    // if(options.showOpen){
-    //   this.open()
-    // }
-    // setTimeout(function () {
-    //   console.log("start pulldown");
-    // }, 1000);
-    // uni.startPullDownRefresh();
-  },
-  onPullDownRefresh() {
-    // console.log("refresh");
-    // setTimeout(function () {
-    //   uni.stopPullDownRefresh();
-    // }, 1000);
-  },
+  onReady: function () {},
+  onLoad: function (options) {},
+  onPullDownRefresh() {},
   onReachBottom() {
+    if (this.loadType === "noMore") return;
     this.loadType = "loading";
-    setTimeout(() => {
-      this.loadType = "noMore";
-    }, 1000);
+    this.getList();
+    // this.loadType = "loading";
+    // setTimeout(() => {
+    //   this.loadType = "noMore";
+    // }, 1000);
   },
-  onShow(){
-    this.tapTag(this.tagIndex)
-  }
+  onShow() {
+    this.tapTag(this.tagIndex);
+  },
 };
 </script>
 
