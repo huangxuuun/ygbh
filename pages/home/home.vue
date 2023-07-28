@@ -41,7 +41,7 @@
             @click="tapDetail(item)"
             :style="{ 'background-image': 'url(' + item.bannerList[0] + ')' }"
           >
-            <view class="y-card-time"> {{ item.publishAt }} </view>
+            <!-- <view class="y-card-time"> {{ item.publishAt }} </view> -->
           </view>
         </template>
         <!-- 自定义 body -->
@@ -387,7 +387,7 @@ export default {
     tapTag(index) {
       // if (this.tagIndex === index) return;
       this.tagIndex = index;
-      this.pageOffset = "";
+      this.page.pageOffset = "";
       this.list = [];
       this.tagList.forEach((item, i) => {
         item.active = false;
@@ -411,8 +411,8 @@ export default {
     },
   },
   onReady: function () {
-    this.page.sessionId = uuid();
-    this.getList();
+    // this.page.sessionId = uuid();
+    // this.getList();
   },
   onLoad: function (options) {
     console.log(options);

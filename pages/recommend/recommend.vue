@@ -15,95 +15,211 @@
         @click="tapMy"
       ></uni-icons>
     </view>
-    <view class="recommend-container">
-      <swiper
-        style="height:100%;width:100%"
-        circular
-        :indicator-dots="indicatorDots"
-        :autoplay="autoplay"
-        :interval="interval"
-        indicator-color="rgba(255,255,255,0.2)"
-        indicator-active-color="linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%)"
-        :duration="duration"
-      >
-        <swiper-item v-for="banner in item.bannerList" :key="banner">
-          <image style="width: 100%;height: 100%;" mode="aspectFit" :src="banner"></image>
-        </swiper-item>
-      </swiper>
-      <view class="recommend-detail">
-        <view class="recommend-detail__title">{{ item.title }}</view>
-        <view class="recommend-detail-tool">
-          <view class="time"> {{ item.publishAt }} </view>
-          <view class="recommend-detail-tool-item">
-            <image
-              src="/static/starfill.png"
-              alt=""
-              class="recommend-detail-tool-item__image"
-              v-if="item.liked"
-              @click="collectItem(2)"
-            />
-            <image
-              src="/static/star.png"
-              alt=""
-              class="recommend-detail-tool-item__image"
-              v-else
-              @click="collectItem(1)"
-            />
-            <text class="recommend-detail-tool-item__text">{{
-              item.likeNum
-            }}</text>
+    <!-- <uni-list>
+      <uni-list-item direction="column" :border="false" clickable>
+        <template v-slot:header>
+          <view></view>
+        </template>
+        <template v-slot:body>
+          <view class="recommend-container">
+            <swiper
+              style="height: 100%; width: 100%"
+              circular
+              :indicator-dots="indicatorDots"
+              :autoplay="autoplay"
+              :interval="interval"
+              indicator-color="rgba(255,255,255,0.2)"
+              indicator-active-color="linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%)"
+              :duration="duration"
+            >
+              <swiper-item v-for="banner in item.bannerList" :key="banner">
+                <image
+                  style="width: 100%; height: 100%"
+                  mode="aspectFit"
+                  :src="banner"
+                ></image>
+              </swiper-item>
+            </swiper>
+            <view class="recommend-detail">
+              <view class="recommend-detail__title">{{ item.title }}</view>
+              <view class="recommend-detail-tool">
+                <view class="time"> {{ item.publishAt }} </view>
+                <view class="recommend-detail-tool-item">
+                  <image
+                    src="/static/starfill.png"
+                    alt=""
+                    class="recommend-detail-tool-item__image"
+                    v-if="item.liked"
+                    @click="collectItem(2)"
+                  />
+                  <image
+                    src="/static/star.png"
+                    alt=""
+                    class="recommend-detail-tool-item__image"
+                    v-else
+                    @click="collectItem(1)"
+                  />
+                  <text class="recommend-detail-tool-item__text">{{
+                    item.likeNum
+                  }}</text>
+                </view>
+                <view class="recommend-detail-tool-item">
+                  <image
+                    src="/static/lock.png"
+                    alt=""
+                    class="recommend-detail-tool-item__image"
+                  />
+                  <text class="recommend-detail-tool-item__text">{{
+                    item.unlockNum
+                  }}</text>
+                </view>
+              </view>
+              <view class="recommend-detail__line"> </view>
+              <view class="recommend-detail__action">
+                <view class="recommend-detail__action-left">
+                  <view style="display: flex; align-items: center">
+                    <text style="min-width: 120rpx; display: inline-block"
+                      >资源地址：</text
+                    >
+                    <text class="value-text">{{ item.url }}</text>
+                    <image
+                      src="/static/copy.png"
+                      alt=""
+                      class="icon"
+                      @click="copyText(item.url)"
+                    />
+                  </view>
+                  <view style="display: flex; align-items: center">
+                    <text style="min-width: 120rpx; display: inline-block"
+                      >密码：</text
+                    >
+                    <text class="value-text">{{ item.password }}</text>
+                    <image
+                      src="/static/copy.png"
+                      alt=""
+                      class="icon"
+                      @click="copyText(item.password)"
+                    />
+                  </view>
+                </view>
+                <view class="recommend-detail__action-right">
+                  <view
+                    class="lock-btn"
+                    @click="unlockItem"
+                    v-if="!item.unlocked"
+                  >
+                    VIP解锁
+                  </view>
+                  <view class="lock-btn" v-else> 已解锁 </view>
+                </view>
+              </view>
+              <view class="recommend-detail__tips" v-if="!item.unlocked">
+                解锁后可查看和保存全部资源！
+              </view>
+            </view>
           </view>
-          <view class="recommend-detail-tool-item">
-            <image
-              src="/static/lock.png"
-              alt=""
-              class="recommend-detail-tool-item__image"
-            />
-            <text class="recommend-detail-tool-item__text">{{
-              item.unlockNum
-            }}</text>
-          </view>
-        </view>
-        <view class="recommend-detail__line"> </view>
-        <view class="recommend-detail__action">
-          <view class="recommend-detail__action-left">
-            <view style="display: flex; align-items: center">
-              <text style="min-width: 120rpx; display: inline-block"
-                >资源地址：</text
-              >
-              <text class="value-text">{{ item.url }}</text>
+        </template>
+      </uni-list-item>
+    </uni-list> -->
+    <swiper :vertical="true" style="width: 100%; height: calc(100vh - 176rpx)">
+      <swiper-item v-for="item in list" :key="item.id">
+        <view class="recommend-container">
+          <swiper
+            style="height: calc(100vh - 500rpx); width: 100%"
+            circular
+            :indicator-dots="indicatorDots"
+            :autoplay="autoplay"
+            :interval="interval"
+            indicator-color="rgba(255,255,255,0.2)"
+            indicator-active-color="linear-gradient(315deg, #8B3FFF 0%, #EF0EC9 100%)"
+            :duration="duration"
+          >
+            <swiper-item v-for="banner in item.bannerList" :key="banner">
               <image
-                src="/static/copy.png"
-                alt=""
-                class="icon"
-                @click="copyText(item.url)"
-              />
+                style="width: 100%; height: 100%"
+                mode="aspectFit"
+                :src="banner"
+              ></image>
+            </swiper-item>
+          </swiper>
+          <view class="recommend-detail">
+            <view class="recommend-detail__title">{{ item.title }}</view>
+            <view class="recommend-detail-tool">
+              <view class="time"> {{ item.publishAt }} </view>
+              <view class="recommend-detail-tool-item">
+                <image
+                  src="/static/starfill.png"
+                  alt=""
+                  class="recommend-detail-tool-item__image"
+                  v-if="item.liked"
+                  @click="collectItem(2)"
+                />
+                <image
+                  src="/static/star.png"
+                  alt=""
+                  class="recommend-detail-tool-item__image"
+                  v-else
+                  @click="collectItem(1)"
+                />
+                <text class="recommend-detail-tool-item__text">{{
+                  item.likeNum
+                }}</text>
+              </view>
+              <view class="recommend-detail-tool-item">
+                <image
+                  src="/static/lock.png"
+                  alt=""
+                  class="recommend-detail-tool-item__image"
+                />
+                <text class="recommend-detail-tool-item__text">{{
+                  item.unlockNum
+                }}</text>
+              </view>
             </view>
-            <view style="display: flex; align-items: center">
-              <text style="min-width: 120rpx; display: inline-block"
-                >密码：</text
-              >
-              <text class="value-text">{{ item.password }}</text>
-              <image
-                src="/static/copy.png"
-                alt=""
-                class="icon"
-                @click="copyText(item.password)"
-              />
+            <view class="recommend-detail__line"> </view>
+            <view class="recommend-detail__action">
+              <view>
+                <text style="display: block">资源地址：</text>
+                <text style="display: block">密码：</text>
+              </view>
+              <view class="recommend-detail__tips" v-if="!item.unlocked">
+                解锁可查看和保存全部资源！
+              </view>
+              <view v-else>
+                <view style="display: flex; align-items: center">
+                  <text class="value-text">{{ item.url }}</text>
+                  <image
+                    src="/static/copy.png"
+                    alt=""
+                    class="icon"
+                    @click="copyText(item.url)"
+                  />
+                </view>
+                <view style="display: flex; align-items: center">
+                  <text class="value-text">{{ item.password }}</text>
+                  <image
+                    src="/static/copy.png"
+                    alt=""
+                    class="icon"
+                    @click="copyText(item.password)"
+                  />
+                </view>
+              </view>
+              <view class="recommend-detail__action-right">
+                <view
+                  class="lock-btn"
+                  @click="unlockItem"
+                  v-if="!item.unlocked"
+                >
+                  VIP解锁
+                </view>
+                <view class="lock-btn" v-else> 已解锁 </view>
+              </view>
             </view>
           </view>
-          <view class="recommend-detail__action-right">
-            <view class="lock-btn" @click="unlockItem" v-if="!item.unlocked">
-              VIP解锁
-            </view>
-            <view class="lock-btn" v-else> 已解锁 </view>
-          </view>
         </view>
-        <view class="recommend-detail__tips" v-if="!item.unlocked">
-          解锁后可查看和保存全部资源！
-        </view>
-      </view>
-    </view>
+      </swiper-item>
+    </swiper>
   </view>
 </template>
 
@@ -123,7 +239,6 @@ export default {
       autoplay: true,
       interval: 2000,
       duration: 500,
-
       page: {
         sort: "",
         pageOffset: "",
@@ -225,7 +340,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .recommend {
   .y-header {
     height: 176rpx;
@@ -278,9 +393,9 @@ export default {
     overflow: scroll;
   }
 
-  .swiper {
-    height: 900rpx;
-  }
+  // .swiper {
+  //   height: 900rpx;
+  // }
 
   .recommend-detail {
     padding: 30rpx;
@@ -322,9 +437,9 @@ export default {
       font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
       color: #ef0ec9;
-      position: absolute;
-      bottom: 26rpx;
-      left: 150rpx;
+      // position: absolute;
+      // bottom: 26rpx;
+      // left: 150rpx;
     }
   }
 
@@ -366,6 +481,11 @@ export default {
 
   .value-text {
     color: #ef0ec9;
+    display: inline-block;
+    width: 320rpx;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   .lock-btn {

@@ -14,7 +14,7 @@
       :duration="duration"
     >
       <swiper-item v-for="banner in item.bannerList" :key="banner">
-        <image style="width: 100%;" mode="aspectFit" :src="banner"></image>
+        <image style="width: 100%" mode="aspectFit" :src="banner"></image>
       </swiper-item>
     </swiper>
     <view class="recommend-detail">
@@ -53,11 +53,15 @@
       </view>
       <view class="recommend-detail__line"> </view>
       <view class="recommend-detail__action">
-        <view class="recommend-detail__action-left">
+        <view>
+          <text style="display: block">资源地址：</text>
+          <text style="display: block">密码：</text>
+        </view>
+        <view class="recommend-detail__tips" v-if="!item.unlocked">
+          解锁可查看和保存全部资源！
+        </view>
+        <view v-else>
           <view style="display: flex; align-items: center">
-            <text style="min-width: 120rpx; display: inline-block"
-              >资源地址：</text
-            >
             <text class="value-text">{{ item.url }}</text>
             <image
               src="/static/copy.png"
@@ -67,7 +71,6 @@
             />
           </view>
           <view style="display: flex; align-items: center">
-            <text style="min-width: 120rpx; display: inline-block">密码：</text>
             <text class="value-text">{{ item.password }}</text>
             <image
               src="/static/copy.png"
@@ -77,6 +80,7 @@
             />
           </view>
         </view>
+
         <view class="recommend-detail__action-right">
           <view class="lock-btn" @click="unlockItem" v-if="!item.unlocked">
             VIP解锁
@@ -84,29 +88,38 @@
           <view class="lock-btn" v-else> 已解锁 </view>
         </view>
       </view>
-      <view class="recommend-detail__tips" v-if="!item.unlocked">
+      <!-- <view class="recommend-detail__tips" v-if="!item.unlocked">
         解锁后可查看和保存全部资源！
-      </view>
+      </view> -->
     </view>
     <view class="info-content">
-      <view class="y-section">写真集介绍</view>
+      <view class="y-section">
+        <view class="y-section-line"></view>
+        <text> 写真集介绍 </text>
+      </view>
       <view>
         {{ item.info }}
       </view>
-      <view class="y-section">写真集介绍</view>
+      <view class="y-section">
+        <view class="y-section-line"></view>
+        <text> 目录 </text>
+      </view>
       <view>
         {{ item.menu }}
       </view>
-      <view class="y-section">写真集介绍</view>
+      <view class="y-section">
+        <view class="y-section-line"></view>
+        <text> 预览图 </text>
+      </view>
     </view>
-    <view style="padding: 30rpx;">
+    <view style="padding: 30rpx">
       <image
         v-for="(img, index) in item.previewImageList"
         :key="img"
         :src="img"
-        style="width: 100%;height: 1000rpx;"
-        mode="aspectFill" 
-		@click="viewImg(item.previewImageList, index)"
+        style="width: 100%; height: 1000rpx"
+        mode="aspectFill"
+        @click="viewImg(item.previewImageList, index)"
       ></image>
     </view>
   </view>
@@ -140,12 +153,12 @@ export default {
     };
   },
   methods: {
-	viewImg(previewImageList, index){
-		uni.previewImage({
-			current:index,
-			urls:previewImageList
-		})
-	},
+    viewImg(previewImageList, index) {
+      uni.previewImage({
+        current: index,
+        urls: previewImageList,
+      });
+    },
     copyText(t) {
       uni.setClipboardData({
         data: t,
@@ -252,9 +265,9 @@ export default {
       font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
       color: #ef0ec9;
-      position: absolute;
-      bottom: 26rpx;
-      left: 150rpx;
+      // position: absolute;
+      // bottom: 26rpx;
+      // left: 150rpx;
     }
   }
 
@@ -297,7 +310,7 @@ export default {
   .value-text {
     color: #ef0ec9;
     display: inline-block;
-    width: 250rpx;
+    width: 320rpx;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -320,21 +333,30 @@ export default {
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.6);
-    position: relative;
-    text-indent: 20rpx;
+    // position: relative;
+    // text-indent: 20rpx;
     margin: 32rpx 0;
+    display: flex;
+    align-items: center;
   }
-
-  .y-section::before {
-    content: "";
-    display: block;
+  .y-section-line {
     width: 6rpx;
     height: 24rpx;
     background: linear-gradient(315deg, #8b3fff 0%, #ef0ec9 100%);
     border-radius: 4rpx;
-    position: absolute;
-    top: 10rpx;
+    margin-right: 20rpx;
   }
+
+  // .y-section::before {
+  //   content: "";
+  //   display: block;
+  //   width: 6rpx;
+  //   height: 24rpx;
+  //   background: linear-gradient(315deg, #8b3fff 0%, #ef0ec9 100%);
+  //   border-radius: 4rpx;
+  //   position: absolute;
+  //   bottom: 8rpx;
+  // }
   .info-content {
     font-size: 24rpx;
     font-family: PingFangSC-Regular, PingFang SC;
