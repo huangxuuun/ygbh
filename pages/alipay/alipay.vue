@@ -1,7 +1,6 @@
 <template>
   <view>
     <web-view :src="payUrl" :onloading="loading" :webview-styles="styles"></web-view>
-    <view>{{ aa }}</view>
   </view>
 </template>
 
@@ -12,8 +11,7 @@
         payUrl: '',
         styles: {
           progress: true
-        },
-        aa: ""
+        }
       }
     },
     onLoad: function(option) {
