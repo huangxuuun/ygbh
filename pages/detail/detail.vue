@@ -211,12 +211,14 @@ export default {
   background-color: #171616;
 }
 .y-header-back {
+  // overflow: hidden;
   &__img {
     width: 48rpx;
     height: 48rpx;
-    margin-top: 120rpx;
+    top: 120rpx;
     position: relative;
     left: 30rpx;
+    z-index: 10;
   }
 }
 
