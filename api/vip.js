@@ -1,16 +1,5 @@
 import request from '../utils/request.js'
 
-//微信支付回调
-
-export function wechatCallBack() {
-    return request({
-        url: '/pay/notify/wechat',
-        method: 'POST',
-        loading: true, //是否开启loading动画
-    })
-}
-
-
 
 //微信购买会员
 export function wechatBuy(id) {
@@ -23,6 +12,20 @@ export function wechatBuy(id) {
         loading: true, //是否开启loading动画
     })
 }
+
+
+//支付宝购买会员
+export function alipayBuy(id) {
+    return request({
+        url: '/vip/buy/alipay',
+        method: 'POST',
+        data:{
+            id
+        },
+        loading: true, //是否开启loading动画
+    })
+}
+
 
 
 

@@ -32,7 +32,17 @@
 			}
 
 		}
-	],
+        ,{
+            "path" : "pages/alipay/alipay",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false,
+                "navigationStyle": "custom"
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

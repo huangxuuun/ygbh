@@ -127,7 +127,7 @@
 <script>
 import { vipStatus, getVipList } from "./../../api/vip.js";
 import { getLikeList, getUnlockedList } from "./../../api/resource";
-import { wechatBuy, paymentStatus } from './../../api/vip.js'
+import { alipayBuy, wechatBuy, paymentStatus } from './../../api/vip.js'
 import CardList from "./../../components/cardList.vue"
 
 
@@ -144,7 +144,7 @@ export default {
       userData:JSON.parse(uni.getStorageSync('USERINFO')),
       swiperCurrent: 0,
       current: 0,
-      payStatusWaitSeconds: 10,
+      payStatusWaitSeconds: 5,
       tabs: ["会员充值", "我的收藏", "我的资源"],
       // cards: [
       //   {
@@ -188,6 +188,8 @@ export default {
       ],
       showAlipay: false,
       showWechatPay: false,
+      goAlipay: false,
+      alipayOrderNo: '',
       vip: {
         enable: false,
         periodFlag: "",
@@ -215,6 +217,14 @@ export default {
     this.getLikeList();
     this.getUnlockedList();
     console.log(uni.getStorageSync('USERINFO'),'userData')
+  },
+  onShow() {
+    if (this.goAlipay && this.alipayOrderNo) {
+      this.goAlipay = false
+      const orderNo = this.alipayOrderNo
+      this.alipayOrderNo = ''
+      this.handlePayResult(orderNo)
+    }
   },
   methods: {
     async getLikeList() {
@@ -338,10 +348,21 @@ export default {
       });
     },
     handleAlipay() {
-      console.log('handle alipay')
+      const packageId = this.getSelectedPackageId();
+      if (!packageId) {
+        return;
+      }
+      alipayBuy(packageId).then(res => {
+        this.goAlipay = true
+        this.alipayOrderNo = res.data.orderNo
+        uni.navigateTo({
+          url: '/pages/alipay/alipay?payUrl=' + encodeURIComponent(res.data.payUrl),
+        })
+      })
     },
     handlePayResult(orderNo) {
       uni.showLoading({
+        title: '查询支付结果中，请稍候',
         mask: true
       })
       const start = new Date().getTime();
@@ -364,7 +385,7 @@ export default {
           clearInterval(payIntervalIndex);
           uni.hideLoading()
           uni.showToast({
-            title: '订单支付中，请稍后刷新页面查看充值状态，请勿重复支付',
+            title: '查询支付结果失败，请稍后刷新页面查看充值状态，请勿重复支付',
             icon: 'loading',
             duration: 3000
           });
